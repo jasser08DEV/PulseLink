@@ -1,0 +1,86 @@
+
+.banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ebf0f0;
+    height: 60px;
+    padding: 0 30px;
+    border-bottom: 3px solid rgb(61, 199, 245);
+    border-radius: 0 0 15px 15px;
+}
+.logo-section {
+    display: flex;
+    align-items: right;
+    margin-right: 10px;
+}
+.logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+
+}
+.leftSideBanner{
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    align-items: left;
+}
+.leftSideBanner h3{
+    cursor: pointer;
+    margin: 0;
+}
+.logo-section h2{
+    font-size: 24px;
+    align-self: center;
+    color: rgb(0, 3, 3);
+    margin-left: 10px;
+}
+.portal-selection {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin: 50px auto;
+    max-width: 1200px;
+    padding: 0 20px;
+}
+.portal-button .icon{
+    font-size: 40px;
+    margin-bottom: 15px;
+
+}
+.portal-button{
+    flex: 1;
+    background-color: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.portal-button:hover {
+    transform: translateY(-5px);
+    border-color: rgb(61, 199, 245);
+}
+footer {
+    margin-top: 100px;
+    padding: 40px;
+    background-color: #ebf0f0;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+.disclaimer {
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.disclaimer strong {
+    color: #d9534f; /* Alert Red */
+}
