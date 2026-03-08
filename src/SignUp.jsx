@@ -21,8 +21,29 @@ const SignUp = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+   const handleSubmit = async (e) => {
         e.preventDefault();
+
+        try {
+            const response = await fetch("http://localhost:8080/api/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                const message = await response.text();
+                alert("Success: " + message);
+            } else {
+                const errorText = await response.text();
+                alert("Server Error: " + errorText);
+            }
+        } catch (error) {
+            console.error("Connection failed:", error);
+            alert("Could not connect to the server. Is your backend running?");
+        }
     };
 
     return (

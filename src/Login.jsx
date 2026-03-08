@@ -15,11 +15,28 @@ const Login = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // This is where you will later call your Java API using Axios
-        console.log("Sending to Java Backend:", formData);
-    };
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await fetch("http://localhost:8080/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const message = await response.text();
+        if (response.ok && message === "Login Successful!") {
+            alert("Success: " + message);
+        } else {
+            alert("Error: " + message);
+        }
+    } catch (error) {
+        console.error("Connection failed:", error);
+        alert("Could not connect to the server. Is your backend still running?");
+    }
+};
 
     return (
         <div className="login-wrapper">
@@ -34,10 +51,10 @@ const Login = () => {
                         <label htmlFor="username">Username</label>
                         <input 
                             type="text" 
-                            id="username" 
-                            name="username" 
-                            placeholder="Enter your username"
-                            value={formData.username}
+                            id="email" 
+                            name="email" 
+                            placeholder="Enter your email"
+                            value={formData.email}
                             onChange={handleChange}
                             required 
                         />
