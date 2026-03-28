@@ -1,3 +1,5 @@
+package com.patientlink.backend;
+
 public class Doctor extends User{
     private String department;
 

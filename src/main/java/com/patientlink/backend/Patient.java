@@ -1,3 +1,5 @@
+package com.patientlink.backend;
+
 public class Patient extends User {
     private String healthIssue;
 

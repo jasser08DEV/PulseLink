@@ -3,6 +3,7 @@ package com.patientlink.backend;
 import org.springframework.data.annotation.Id;
 
 
+
 public class User {
     @Id
     private String id;
@@ -15,7 +16,8 @@ public class User {
     private String contactNumber;
     private String address;
 
-
+    public User() {}
+    
     public User(String id, String firstName, String lastName, String email, String password, String dob, String gender, String contactNumber, String address) {
         this.id = id;
         this.firstName = firstName;

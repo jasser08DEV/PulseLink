@@ -1,3 +1,6 @@
+package com.patientlink.backend;
+
+
 public class Nurse extends User {
     private String licenseType;
 
