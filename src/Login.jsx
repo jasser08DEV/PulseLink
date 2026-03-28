@@ -1,114 +1,89 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./Login.css";
+import React, { useState } from 'react';
+import './Login.css';
 
 const Login = () => {
-  const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        username: '',
+        password: ''
+    });
 
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
-  const [error, setError] = useState("");
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setError("");
-  };
-
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Basic validation
-    if (!formData.username || !formData.password) {
-      setError("Please fill in all fields.");
-      return;
-    }
-
     try {
-      const response = await fetch("http://localhost:8080/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+        const response = await fetch("http://localhost:8080/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
 
-      const message = await response.text();
-
-      if (response.ok && message === "Login Successful!") {
-        navigate("/"); 
-      } else {
-        setError(message || "Invalid credentials. Please try again.");
-      }
-    } catch (err) {
-      setError("Could not connect to the server. Is your backend running?");
+        const message = await response.text();
+        if (response.ok && message === "Login Successful!") {
+            alert("Success: " + message);
+        } else {
+            alert("Error: " + message);
+        }
+    } catch (error) {
+        console.error("Connection failed:", error);
+        alert("Could not connect to the server. Is your backend still running?");
     }
-  };
+};
 
-  return (
-    <div className="main-Container">
-      <div className="login-container">
+    return (
+        <div className="login-wrapper">
+            <div className="login-card">
+                <div className="login-header">
+                    <h2>Patient Monitoring System</h2>
+                    <p>Secure Access Portal</p>
+                </div>
 
-        <div className="header">
-          <div className="nav-logo">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <polyline
-                points="2,16 7,16 10,9 13,23 16,13 19,19 22,16 30,16"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="nav-logo-text">PulseLink</span>
-          </div>
-          <h1>Welcome Back</h1>
-          <p>Sign in to access your clinical portal.</p>
+                <form onSubmit={handleSubmit} className="login-form">
+                    <div className="input-group">
+                        <label htmlFor="username">Username</label>
+                        <input 
+                            type="text" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Enter your email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required 
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <label htmlFor="password">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Enter your password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required 
+                        />
+                    </div>
+
+                    <button type="submit" className="login-button">Sign In</button>
+                    
+                    <div className="form-footer">
+                        <button type="button" className="signup-btn">
+                            Create an account
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <form className="login-Form" onSubmit={handleSubmit}>
-
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Enter your email"
-            required
-          />
-
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="••••••••"
-            required
-          />
-
-          <a href="#" className="forgot-link">Forgot password?</a>
-
-          {error && <p className="error-msg">{error}</p>}
-
-          <button type="submit" className="login-Button">
-            Log In
-          </button>
-
-          <p className="signup-Link">
-            Don't have an account? <Link to="/signup">Sign Up</Link>
-          </p>
-
-        </form>
-
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Login;
