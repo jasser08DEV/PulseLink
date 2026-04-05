@@ -1,0 +1,367 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg:         #f5f5f3;
+  --color-surface:    #ffffff;
+  --color-border:     rgba(0, 0, 0, 0.10);
+  --color-border-md:  rgba(0, 0, 0, 0.22);
+  --color-text:       #1a1a18;
+  --color-muted:      #6b6b68;
+  --color-faint:      #9e9e9b;
+  --color-error:      #c0392b;
+  --font-serif:       'Cormorant Garamond', Georgia, serif;
+  --font-sans:        'DM Sans', system-ui, sans-serif;
+  --font-lora:        'Lora', Georgia, serif;
+}
+
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background-color: var(--color-bg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.signup-container {
+  background-color: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 2rem;
+  border-radius: 6px;
+  border: 0.5px solid var(--color-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  width: 100%;
+  max-width: 520px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text);
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+}
+
+.nav-logo-text {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--color-text);
+}
+
+.header h1 {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.header p {
+  font-size: 13px;
+  color: var(--color-muted);
+  font-weight: 300;
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.step {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-faint);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.step p {
+  font-size: 11px;
+}
+
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--color-bg);
+  border: 0.5px solid var(--color-border);
+  color: var(--color-faint);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.step-connector {
+  flex: 1;
+  max-width: 36px;
+  height: 1px;
+  background-color: var(--color-border);
+}
+
+.step.active {
+  color: var(--color-text);
+}
+
+.step.active .step-num {
+  background-color: var(--color-text);
+  color: var(--color-surface);
+  border-color: var(--color-text);
+}
+
+.step.done {
+  color: var(--color-muted);
+}
+
+.step.done .step-num {
+  background-color: var(--color-border);
+  color: var(--color-muted);
+  border-color: var(--color-border-md);
+}
+
+.step-content {
+  width: 100%;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.section-sub {
+  font-family: var(--font-lora);
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.name-field,
+.lastN-field,
+.dob-info,
+.gender-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.signup-form label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--color-faint);
+  margin-top: 0.5rem;
+}
+
+.signup-form input,
+.signup-form select,
+.signup-form textarea {
+  width: 100%;
+  padding: 0 14px;
+  height: 40px;
+  border: 0.5px solid var(--color-border);
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--color-text);
+  background: #f8f8f6;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  appearance: none;
+}
+
+.signup-form textarea {
+  height: 80px;
+  padding: 10px 14px;
+  resize: vertical;
+}
+
+.signup-form input:focus,
+.signup-form select:focus,
+.signup-form textarea:focus {
+  border-color: var(--color-border-md);
+  background: var(--color-surface);
+}
+
+.field-error {
+  font-size: 11px;
+  color: var(--color-error);
+  margin-top: 2px;
+}
+
+.submit-error {
+  background: rgba(192, 57, 43, 0.06);
+  border: 0.5px solid rgba(192, 57, 43, 0.2);
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 0.5rem;
+}
+
+.terms-box {
+  background: #f8f8f6;
+  border: 0.5px solid var(--color-border);
+  border-radius: 4px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--color-muted);
+  line-height: 1.8;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--color-muted);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+.checkbox-field input[type="checkbox"] {
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--color-text);
+  cursor: pointer;
+}
+
+.checkbox-field label {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.next-button {
+  height: 42px;
+  padding: 0 1.75rem;
+  background-color: var(--color-text);
+  color: var(--color-surface);
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.next-button:hover {
+  opacity: 0.8;
+}
+
+.back-button {
+  height: 42px;
+  padding: 0 1.25rem;
+  background: none;
+  color: var(--color-faint);
+  border: 0.5px solid var(--color-border);
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.back-button:hover {
+  border-color: var(--color-border-md);
+  color: var(--color-muted);
+}
+
+.login-link {
+  margin-top: 1.5rem;
+  font-size: 12px;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.login-link a {
+  color: var(--color-text);
+  text-decoration: none;
+  border-bottom: 0.5px solid var(--color-border-md);
+  padding-bottom: 1px;
+}
+
+.login-link a:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 540px) {
+  .info {
+    grid-template-columns: 1fr;
+  }
+
+  .signup-container {
+    padding: 2rem 1.25rem;
+  }
+}
