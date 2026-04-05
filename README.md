@@ -1,16 +1,45 @@
-# React + Vite
+# PulseLink: Real-Time Patient Monitoring System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+PulseLink is a full-stack web application designed for high-stakes healthcare environments. It provides a robust network for real-time patient monitoring and instant clinical alerts, ensuring that healthcare providers can respond to critical physiological changes without delay.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ## System Architecture
 
-## React Compiler
+The application is built on a modern decoupled architecture to ensure scalability and performance:
+* **Backend**: Developed using **Java**, handling the core business logic, patient data processing, and alert generation.
+* **Frontend**: Built with **React**, providing a dynamic, responsive dashboard for medical staff to view live patient vitals.
+* **Real-Time Layer**: Utilizes specialized networking protocols to push updates to the UI the moment data is received.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ## Key Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **Live Vital Tracking**: Continuous monitoring of patient metrics with low-latency data transmission.
+* **Automated Alert Network**: A rule-based system that triggers immediate notifications when patient vitals cross pre-defined safety thresholds.
+* **Clinician Dashboard**: A centralized React interface that allows staff to monitor multiple patients simultaneously from a single workstation.
+* **Secure Data Management**: Backend integration designed to handle sensitive medical records with high integrity.
+
+---
+
+## ## Technical Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Language** | Java |
+| **Library/Framework** | React |
+| **Application Type** | Full-Stack Web App |
+| **Primary Domain** | Healthcare / Medical Monitoring |
+
+---
+
+## ## Development Status
+
+PulseLink is currently an active project focused on the integration of real-time data streams and the refinement of the patient alert notification logic.
+
+---
+
+## ## Author
+**Jasser Hammami**
+* **Major**: Computer Science
+* **Version**: 3.0
