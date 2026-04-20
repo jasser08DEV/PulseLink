@@ -1,929 +1,371 @@
-import React, { useState } from 'react';
-import './Dashboard.css';
+import React, { useState } from "react";
+import "./Dashboard.css";
 
-const Sidebar = ({ user, activeTab, setActiveTab, navigate }) => {
+const patient = {
+  name: "Patient A",
+  id: "MRN-8821-X",
+  age: 34,
+  ward: "Cardiology — Ward B",
+  doctor: "Doctor B",
+  avatar: "PA",
+};
 
-    const patientNav = [
-        { id: 'overview', icon: '📊', label: 'Overview' },
-        { id: 'vitals', icon: '💓', label: 'My Vitals' },
-        { id: 'appointments', icon: '📅', label: 'Appointments' },
-        { id: 'profile', icon: '👤', label: 'My Profile' },
-    ];
+const vitals = [
+  { label: "Heart Rate", value: "78", unit: "bpm", status: "normal", icon: "♥" },
+  { label: "Blood Pressure", value: "118/76", unit: "mmHg", status: "normal", icon: "⊕" },
+  { label: "Temperature", value: "37.1", unit: "°C", status: "normal", icon: "◈" },
+  { label: "SpO₂", value: "98", unit: "%", status: "normal", icon: "◉" },
+  { label: "Glucose", value: "112", unit: "mg/dL", status: "caution", icon: "◆" },
+  { label: "Respiratory", value: "16", unit: "breaths/min", status: "normal", icon: "◎" },
+];
 
-    const doctorNav = [
-        { id: 'overview', icon: '📊', label: 'Overview' },
-        { id: 'patients', icon: '🏥', label: 'My Patients' },
-        { id: 'appointments', icon: '📅', label: 'Schedule' },
-        { id: 'profile', icon: '👤', label: 'My Profile' },
-    ];
+const alerts = [
+  { id: 1, type: "caution", message: "Glucose slightly elevated — monitor after meals", time: "2h ago" },
+  { id: 2, type: "info", message: "Cardiology follow-up scheduled for tomorrow 09:00", time: "5h ago" },
+  { id: 3, type: "info", message: "New lab results available in your reports", time: "Yesterday" },
+];
 
-    const nurseNav = [
-        { id: 'overview', icon: '📊', label: 'Overview' },
-        { id: 'patients', icon: '🏥', label: 'Patient List' },
-        { id: 'vitals', icon: '💓', label: 'Vitals Log' },
-        { id: 'profile', icon: '👤', label: 'My Profile' },
-    ];
+const appointments = [
+  { id: 1, title: "Cardiology Follow-up", doctor: "Doctor B", date: "30 Mar 2026", time: "09:00 AM", status: "upcoming" },
+  { id: 2, title: "Blood Work Review", doctor: "Dr. Sana Belhadj", date: "3 Apr 2026", time: "11:30 AM", status: "upcoming" },
+  { id: 3, title: "ECG Screening", doctor: "Doctor B", date: "10 Apr 2026", time: "02:00 PM", status: "upcoming" },
+  { id: 4, title: "General Check-up", doctor: "Dr. Rania Slim", date: "18 Mar 2026", time: "10:00 AM", status: "completed" },
+];
 
-    let navItems = patientNav;
-    if (user && user.role === 'doctor') {
-        navItems = doctorNav;
-    } else if (user && user.role === 'nurse') {
-        navItems = nurseNav;
-    }
+const medications = [
+  { id: 1, name: "Metoprolol", dose: "50mg", frequency: "Once daily", time: "08:00 AM", taken: true },
+  { id: 2, name: "Aspirin", dose: "100mg", frequency: "Once daily", time: "08:00 AM", taken: true },
+  { id: 3, name: "Atorvastatin", dose: "20mg", frequency: "Once daily", time: "09:00 PM", taken: false },
+  { id: 4, name: "Ramipril", dose: "5mg", frequency: "Twice daily", time: "08:00 AM / 08:00 PM", taken: false },
+];
 
-    let roleLabel = 'Patient';
-    let roleBadgeClass = 'badge-patient';
-    if (user && user.role === 'doctor') {
-        roleLabel = 'Doctor';
-        roleBadgeClass = 'badge-doctor';
-    } else if (user && user.role === 'nurse') {
-        roleLabel = 'Nurse';
-        roleBadgeClass = 'badge-nurse';
-    }
+const reports = [
+  { id: 1, title: "Complete Blood Count", date: "25 Mar 2026", type: "Lab", status: "Ready" },
+  { id: 2, title: "Echocardiogram Report", date: "20 Mar 2026", type: "Imaging", status: "Ready" },
+  { id: 3, title: "Lipid Panel", date: "15 Mar 2026", type: "Lab", status: "Ready" },
+  { id: 4, title: "Chest X-Ray", date: "10 Mar 2026", type: "Imaging", status: "Ready" },
+];
 
-    const userName = user && user.name ? user.name : 'User';
-    const avatarLetter = userName[0].toUpperCase();
+const Sparkline = ({ data, color }) => {
+  const w = 120, h = 40;
+  const max = Math.max(...data), min = Math.min(...data);
+  const pts = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = h - ((v - min) / (max - min || 1)) * h;
+    return `${x},${y}`;
+  }).join(" ");
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5"
+        strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+};
 
-    return (
-        <aside className="sidebar">
-            <div className="sidebar-brand">
-                <span className="brand-pulse">Pulse</span><span className="brand-link">Link</span>
-            </div>
-            <div className="sidebar-user">
-                <div className="user-avatar">{avatarLetter}</div>
-                <div className="user-info">
-                    <span className="user-name">{userName}</span>
-                    <span className={"role-badge " + roleBadgeClass}>{roleLabel}</span>
-                </div>
-            </div>
-            <nav className="sidebar-nav">
-                {navItems.map(item => (
-                    <button
-                        key={item.id}
-                        className={activeTab === item.id ? "nav-item nav-item--active" : "nav-item"}
-                        onClick={() => setActiveTab(item.id)}
-                    >
-                        <span className="nav-icon">{item.icon}</span>
-                        <span className="nav-label">{item.label}</span>
-                    </button>
-                ))}
-            </nav>
-            <button className="logout-btn" onClick={() => navigate('login')}>
-                Sign Out
+const heartData  = [72, 75, 78, 74, 80, 76, 78];
+const bpData     = [118, 122, 115, 120, 118, 116, 118];
+const spo2Data   = [97, 98, 98, 99, 98, 97, 98];
+const glucData   = [105, 108, 115, 112, 118, 112, 112];
+const sparkData = { "Heart Rate": heartData, "Blood Pressure": bpData, "SpO₂": spo2Data, "Glucose": glucData };
+const sparkColor = { normal: "#1D9E75", caution: "#EF9F27" };
+
+const navItems = [
+  { id: "home",        label: "Home",         icon: "⌂" },
+  { id: "vitals",      label: "Vitals",        icon: "♥" },
+  { id: "alerts",      label: "Alerts",        icon: "⚑" },
+  { id: "appointments",label: "Appointments",  icon: "◷" },
+  { id: "medications", label: "Medications",   icon: "◈" },
+  { id: "reports",     label: "Reports",       icon: "◧" },
+];
+
+const Dashboard = () => {
+  const [activeSection, setActiveSection] = useState("home");
+  const [meds, setMeds] = useState(medications);
+  const [dismissedAlerts, setDismissedAlerts] = useState([]);
+
+  const toggleMed = (id) =>
+    setMeds((prev) => prev.map((m) => m.id === id ? { ...m, taken: !m.taken } : m));
+
+  const dismissAlert = (id) =>
+    setDismissedAlerts((prev) => [...prev, id]);
+
+  const visibleAlerts = alerts.filter((a) => !dismissedAlerts.includes(a.id));
+
+  return (
+    <div className="db-root">
+      <aside className="db-sidebar">
+        <div className="db-sidebar-logo">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+            <polyline points="2,16 7,16 10,9 13,23 16,13 19,19 22,16 30,16"
+              stroke="currentColor" strokeWidth="1.5" fill="none"
+              strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="db-logo-text">PulseLink</span>
+        </div>
+
+        <nav className="db-nav">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              className={`db-nav-item ${activeSection === item.id ? "active" : ""}`}
+              onClick={() => setActiveSection(item.id)}
+            >
+              <span className="db-nav-icon">{item.icon}</span>
+              <span className="db-nav-label">{item.label}</span>
+              {item.id === "alerts" && visibleAlerts.length > 0 && (
+                <span className="db-badge">{visibleAlerts.length}</span>
+              )}
             </button>
-        </aside>
-    );
-};
+          ))}
+        </nav>
 
-const PatientOverview = ({ user }) => {
-    const userName = user && user.name ? user.name : 'there';
-
-    return (
-        <div className="tab-content">
-            <div className="page-header">
-                <h1>Good morning, {userName} 👋</h1>
-                <p className="page-sub">Here's your health summary for today.</p>
-            </div>
-            <div className="stat-grid">
-                <div className="stat-card stat-card--normal">
-                    <div className="stat-icon">💓</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Heart Rate</span>
-                        <span className="stat-value">72 <span className="stat-unit">bpm</span></span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--normal">
-                    <div className="stat-icon">🩸</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Blood Pressure</span>
-                        <span className="stat-value">118/76 <span className="stat-unit">mmHg</span></span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--normal">
-                    <div className="stat-icon">🌡️</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Temperature</span>
-                        <span className="stat-value">98.6 <span className="stat-unit">°F</span></span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--normal">
-                    <div className="stat-icon">💨</div>
-                    <div className="stat-body">
-                        <span className="stat-label">SpO₂</span>
-                        <span className="stat-value">98 <span className="stat-unit">%</span></span>
-                    </div>
-                </div>
-            </div>
-            <div className="section-title">Upcoming Appointments</div>
-            <div className="card-list">
-                <div className="list-row">
-                    <div className="list-row-left">
-                        <div className="appt-date">Mar 30, 2026 <span className="appt-time">10:00 AM</span></div>
-                        <div className="appt-doctor">Dr. Emily Chen</div>
-                        <div className="appt-type">Cardiology Follow-up</div>
-                    </div>
-                    <span className="badge-status badge-confirmed">confirmed</span>
-                </div>
-                <div className="list-row">
-                    <div className="list-row-left">
-                        <div className="appt-date">Apr 5, 2026 <span className="appt-time">2:30 PM</span></div>
-                        <div className="appt-doctor">Dr. James Patel</div>
-                        <div className="appt-type">General Checkup</div>
-                    </div>
-                    <span className="badge-status badge-pending">pending</span>
-                </div>
-            </div>
+        <div className="db-sidebar-footer">
+          <div className="db-avatar">{patient.avatar}</div>
+          <div className="db-sidebar-patient">
+            <div className="db-sidebar-name">{patient.name}</div>
+            <div className="db-sidebar-id">{patient.id}</div>
+          </div>
         </div>
-    );
-};
+      </aside>
 
-const PatientVitals = () => {
-    const [formData, setFormData] = useState({
-        heartRate: '',
-        bloodPressure: '',
-        temperature: '',
-        spo2: '',
-        weight: '',
-        notes: ''
-    });
-    const [submitted, setSubmitted] = useState(false);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch("http://localhost:8080/api/vitals", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                setSubmitted(true);
-                setTimeout(() => setSubmitted(false), 3000);
-                setFormData({ heartRate: '', bloodPressure: '', temperature: '', spo2: '', weight: '', notes: '' });
-            } else {
-                alert("Failed to log vitals.");
-            }
-        } catch (error) {
-            console.error("Connection failed:", error);
-            alert("Could not connect to the server. Is your backend running?");
-        }
-    };
-
-    return (
-        <div className="tab-content">
-            <div className="page-header">
-                <h1>My Vitals</h1>
-                <p className="page-sub">Log your current health readings.</p>
+      <main className="db-main">
+        <header className="db-topbar">
+          <div>
+            <div className="db-topbar-title">
+              {navItems.find((n) => n.id === activeSection)?.label}
             </div>
-            {submitted && (
-                <div className="success-banner">Vitals logged successfully!</div>
-            )}
-            <div className="form-card">
-                <form onSubmit={handleSubmit} className="vitals-form">
-                    <div className="form-grid-2">
-                        <div className="input-group">
-                            <label>Heart Rate (bpm)</label>
-                            <input
-                                type="number"
-                                name="heartRate"
-                                placeholder="e.g. 72"
-                                value={formData.heartRate}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label>Blood Pressure (mmHg)</label>
-                            <input
-                                type="text"
-                                name="bloodPressure"
-                                placeholder="e.g. 120/80"
-                                value={formData.bloodPressure}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label>Temperature (°F)</label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                name="temperature"
-                                placeholder="e.g. 98.6"
-                                value={formData.temperature}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label>SpO₂ (%)</label>
-                            <input
-                                type="number"
-                                name="spo2"
-                                placeholder="e.g. 98"
-                                value={formData.spo2}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label>Weight (lbs)</label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                name="weight"
-                                placeholder="e.g. 165"
-                                value={formData.weight}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="input-group full-width">
-                            <label>Notes</label>
-                            <textarea
-                                name="notes"
-                                placeholder="Any symptoms or notes..."
-                                value={formData.notes}
-                                onChange={handleChange}
-                                rows={3}
-                            />
-                        </div>
+            <div className="db-topbar-sub">
+              {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+            </div>
+          </div>
+          <div className="db-topbar-right">
+            <div className="db-status-dot"></div>
+            <span className="db-status-text">All systems normal</span>
+          </div>
+        </header>
+
+        <div className="db-content">
+          {activeSection === "home" && (
+            <div className="db-section">
+              <div className="db-welcome">
+                <div>
+                  <div className="db-welcome-greeting">Good morning,</div>
+                  <div className="db-welcome-name">{patient.name}</div>
+                  <div className="db-welcome-meta">
+                    {patient.ward} &nbsp;·&nbsp; Under care of {patient.doctor}
+                  </div>
+                </div>
+                <div className="db-welcome-stats">
+                  <div className="db-mini-stat">
+                    <div className="db-mini-stat-val">{meds.filter(m => m.taken).length}/{meds.length}</div>
+                    <div className="db-mini-stat-label">Meds taken today</div>
+                  </div>
+                  <div className="db-mini-stat">
+                    <div className="db-mini-stat-val">{appointments.filter(a => a.status === "upcoming").length}</div>
+                    <div className="db-mini-stat-label">Upcoming visits</div>
+                  </div>
+                  <div className="db-mini-stat">
+                    <div className={`db-mini-stat-val ${visibleAlerts.length > 0 ? "caution" : ""}`}>{visibleAlerts.length}</div>
+                    <div className="db-mini-stat-label">Active alerts</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="db-sub-title">Today's Vitals</div>
+              <div className="db-vitals-grid">
+                {vitals.map((v) => (
+                  <div key={v.label} className={`db-vital-card ${v.status}`}>
+                    <div className="db-vital-top">
+                      <span className="db-vital-label">{v.label}</span>
+                      <span className={`db-vital-badge ${v.status}`}>{v.status}</span>
                     </div>
-                    <button type="submit" className="submit-btn">Log Vitals</button>
-                </form>
+                    <div className="db-vital-value">
+                      {v.value}<span className="db-vital-unit">{v.unit}</span>
+                    </div>
+                    {sparkData[v.label] && (
+                      <Sparkline data={sparkData[v.label]} color={sparkColor[v.status]} />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="db-home-bottom">
+                <div className="db-home-col">
+                  <div className="db-sub-title">Recent Alerts</div>
+                  {visibleAlerts.slice(0, 2).map((a) => (
+                    <div key={a.id} className={`db-alert-item ${a.type}`}>
+                      <div className="db-alert-msg">{a.message}</div>
+                      <div className="db-alert-time">{a.time}</div>
+                    </div>
+                  ))}
+                  {visibleAlerts.length === 0 && <div className="db-empty">No active alerts</div>}
+                </div>
+                <div className="db-home-col">
+                  <div className="db-sub-title">Next Appointment</div>
+                  {(() => {
+                    const next = appointments.find(a => a.status === "upcoming");
+                    return next ? (
+                      <div className="db-next-appt">
+                        <div className="db-appt-title">{next.title}</div>
+                        <div className="db-appt-doctor">{next.doctor}</div>
+                        <div className="db-appt-datetime">{next.date} &nbsp;·&nbsp; {next.time}</div>
+                      </div>
+                    ) : <div className="db-empty">No upcoming appointments</div>;
+                  })()}
+                </div>
+              </div>
             </div>
-            <div className="section-title">Recent Vitals History</div>
-            <div className="table-wrapper">
-                <table className="data-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Heart Rate</th>
-                            <th>Blood Pressure</th>
-                            <th>Temp</th>
-                            <th>SpO₂</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Mar 27</td>
-                            <td>72 bpm</td>
-                            <td>118/76</td>
-                            <td>98.6°F</td>
-                            <td>98%</td>
-                            <td><span className="badge-normal">Normal</span></td>
-                        </tr>
-                        <tr>
-                            <td>Mar 26</td>
-                            <td>76 bpm</td>
-                            <td>122/80</td>
-                            <td>98.8°F</td>
-                            <td>97%</td>
-                            <td><span className="badge-normal">Normal</span></td>
-                        </tr>
-                        <tr>
-                            <td>Mar 25</td>
-                            <td>88 bpm</td>
-                            <td>130/85</td>
-                            <td>99.2°F</td>
-                            <td>96%</td>
-                            <td><span className="badge-warning">Elevated</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+          )}
+
+          {activeSection === "vitals" && (
+            <div className="db-section">
+              <div className="db-vitals-grid db-vitals-grid--large">
+                {vitals.map((v) => (
+                  <div key={v.label} className={`db-vital-card db-vital-card--large ${v.status}`}>
+                    <div className="db-vital-top">
+                      <span className="db-vital-label">{v.label}</span>
+                      <span className={`db-vital-badge ${v.status}`}>{v.status}</span>
+                    </div>
+                    <div className="db-vital-value">
+                      {v.value}<span className="db-vital-unit">{v.unit}</span>
+                    </div>
+                    {sparkData[v.label] && (
+                      <div className="db-sparkline-large">
+                        <Sparkline data={sparkData[v.label]} color={sparkColor[v.status]} />
+                      </div>
+                    )}
+                    <div className="db-vital-footer">Last updated: today, 08:42 AM</div>
+                  </div>
+                ))}
+              </div>
+              <div className="db-notice-box">
+                Vitals are updated by your care team. Contact your nurse if a reading seems incorrect.
+              </div>
             </div>
+          )}
+
+          {activeSection === "alerts" && (
+            <div className="db-section">
+              {visibleAlerts.length === 0 && (
+                <div className="db-empty-state">
+                  <div className="db-empty-icon">✓</div>
+                  <div className="db-empty-title">All clear</div>
+                  <div className="db-empty-sub">You have no active alerts at this time.</div>
+                </div>
+              )}
+              {visibleAlerts.map((a) => (
+                <div key={a.id} className={`db-alert-card ${a.type}`}>
+                  <div className="db-alert-card-left">
+                    <div className={`db-alert-indicator ${a.type}`}></div>
+                    <div>
+                      <div className="db-alert-card-msg">{a.message}</div>
+                      <div className="db-alert-card-time">{a.time}</div>
+                    </div>
+                  </div>
+                  <button className="db-alert-dismiss" onClick={() => dismissAlert(a.id)}>Dismiss</button>
+                </div>
+              ))}
+              {dismissedAlerts.length > 0 && (
+                <div className="db-dismissed-note">{dismissedAlerts.length} alert(s) dismissed this session.</div>
+              )}
+            </div>
+          )}
+
+          {activeSection === "appointments" && (
+            <div className="db-section">
+              <div className="db-sub-title">Upcoming</div>
+              {appointments.filter(a => a.status === "upcoming").map((a) => (
+                <div key={a.id} className="db-appt-card">
+                  <div className="db-appt-date-box">
+                    <div className="db-appt-day">{a.date.split(" ")[0]}</div>
+                    <div className="db-appt-month">{a.date.split(" ")[1]}</div>
+                  </div>
+                  <div className="db-appt-info">
+                    <div className="db-appt-card-title">{a.title}</div>
+                    <div className="db-appt-card-doctor">{a.doctor}</div>
+                    <div className="db-appt-card-time">{a.time}</div>
+                  </div>
+                  <span className="db-appt-status upcoming">Upcoming</span>
+                </div>
+              ))}
+
+              <div className="db-sub-title" style={{ marginTop: "2rem" }}>Past</div>
+              {appointments.filter(a => a.status === "completed").map((a) => (
+                <div key={a.id} className="db-appt-card db-appt-card--past">
+                  <div className="db-appt-date-box past">
+                    <div className="db-appt-day">{a.date.split(" ")[0]}</div>
+                    <div className="db-appt-month">{a.date.split(" ")[1]}</div>
+                  </div>
+                  <div className="db-appt-info">
+                    <div className="db-appt-card-title">{a.title}</div>
+                    <div className="db-appt-card-doctor">{a.doctor}</div>
+                    <div className="db-appt-card-time">{a.time}</div>
+                  </div>
+                  <span className="db-appt-status completed">Completed</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeSection === "medications" && (
+            <div className="db-section">
+              <div className="db-med-progress">
+                <div className="db-med-progress-label">
+                  {meds.filter(m => m.taken).length} of {meds.length} taken today
+                </div>
+                <div className="db-progress-bar">
+                  <div className="db-progress-fill"
+                    style={{ width: `${(meds.filter(m => m.taken).length / meds.length) * 100}%` }}>
+                  </div>
+                </div>
+              </div>
+
+              {meds.map((m) => (
+                <div key={m.id} className={`db-med-card ${m.taken ? "taken" : ""}`}>
+                  <div className="db-med-info">
+                    <div className="db-med-name">{m.name}</div>
+                    <div className="db-med-detail">{m.dose} &nbsp;·&nbsp; {m.frequency}</div>
+                    <div className="db-med-time">{m.time}</div>
+                  </div>
+                  <button
+                    className={`db-med-toggle ${m.taken ? "taken" : ""}`}
+                    onClick={() => toggleMed(m.id)}
+                  >
+                    {m.taken ? "✓ Taken" : "Mark taken"}
+                  </button>
+                </div>
+              ))}
+
+              <div className="db-notice-box">
+                Do not adjust your medication without consulting your doctor or nurse.
+              </div>
+            </div>
+          )}
+
+          {activeSection === "reports" && (
+            <div className="db-section">
+              {reports.map((r) => (
+                <div key={r.id} className="db-report-card">
+                  <div className="db-report-left">
+                    <div className="db-report-type-badge">{r.type}</div>
+                    <div>
+                      <div className="db-report-title">{r.title}</div>
+                      <div className="db-report-date">{r.date}</div>
+                    </div>
+                  </div>
+                  <button className="db-report-btn">View Report</button>
+                </div>
+              ))}
+              <div className="db-notice-box">
+                Reports are provided by your clinical team. Contact your doctor for interpretation.
+              </div>
+            </div>
+          )}
         </div>
-    );
-};
-
-const Appointments = ({ role }) => {
-    const [showForm, setShowForm] = useState(false);
-    const [formData, setFormData] = useState({
-        date: '',
-        time: '',
-        reason: '',
-        doctor: ''
-    });
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch("http://localhost:8080/api/appointments", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                alert("Appointment requested successfully!");
-                setShowForm(false);
-                setFormData({ date: '', time: '', reason: '', doctor: '' });
-            } else {
-                alert("Failed to book appointment.");
-            }
-        } catch (error) {
-            console.error("Connection failed:", error);
-            alert("Could not connect to the server. Is your backend running?");
-        }
-    };
-
-    const pageTitle = role === 'patient' ? 'My Appointments' : 'Schedule';
-    const pageSubtitle = role === 'patient' ? 'View and request appointments.' : 'Manage your patient appointments.';
-
-    return (
-        <div className="tab-content">
-            <div className="page-header">
-                <h1>{pageTitle}</h1>
-                <p className="page-sub">{pageSubtitle}</p>
-            </div>
-            {role === 'patient' && (
-                <button className="submit-btn" onClick={() => setShowForm(!showForm)}>
-                    {showForm ? 'Cancel' : '+ Request Appointment'}
-                </button>
-            )}
-            {showForm && (
-                <div className="form-card" style={{ marginTop: '1rem' }}>
-                    <form onSubmit={handleSubmit} className="vitals-form">
-                        <div className="form-grid-2">
-                            <div className="input-group">
-                                <label>Preferred Date</label>
-                                <input
-                                    type="date"
-                                    name="date"
-                                    value={formData.date}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="input-group">
-                                <label>Preferred Time</label>
-                                <input
-                                    type="time"
-                                    name="time"
-                                    value={formData.time}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="input-group">
-                                <label>Doctor</label>
-                                <select
-                                    name="doctor"
-                                    value={formData.doctor}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="">Select Doctor</option>
-                                    <option value="Dr. Emily Chen">Dr. Emily Chen - Cardiology</option>
-                                    <option value="Dr. James Patel">Dr. James Patel - General</option>
-                                    <option value="Dr. Sarah Williams">Dr. Sarah Williams - Neurology</option>
-                                </select>
-                            </div>
-                            <div className="input-group">
-                                <label>Reason for Visit</label>
-                                <input
-                                    type="text"
-                                    name="reason"
-                                    placeholder="e.g. Follow-up checkup"
-                                    value={formData.reason}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <button type="submit" className="submit-btn">Submit Request</button>
-                    </form>
-                </div>
-            )}
-            <div className="section-title">Upcoming</div>
-            <div className="card-list">
-                <div className="list-row">
-                    <div className="list-row-left">
-                        <div className="appt-date">Mar 30, 2026 <span className="appt-time">10:00 AM</span></div>
-                        <div className="appt-doctor">Dr. Emily Chen</div>
-                        <div className="appt-type">Cardiology Follow-up</div>
-                    </div>
-                    <span className="badge-status badge-confirmed">confirmed</span>
-                </div>
-                <div className="list-row">
-                    <div className="list-row-left">
-                        <div className="appt-date">Apr 5, 2026 <span className="appt-time">2:30 PM</span></div>
-                        <div className="appt-doctor">Dr. James Patel</div>
-                        <div className="appt-type">General Checkup</div>
-                    </div>
-                    <span className="badge-status badge-pending">pending</span>
-                </div>
-            </div>
-            <div className="section-title" style={{ marginTop: '2rem' }}>Past</div>
-            <div className="card-list">
-                <div className="list-row">
-                    <div className="list-row-left">
-                        <div className="appt-date">Mar 10, 2026 <span className="appt-time">9:00 AM</span></div>
-                        <div className="appt-doctor">Dr. Sarah Williams</div>
-                        <div className="appt-type">Neurology Consult</div>
-                    </div>
-                    <span className="badge-status badge-completed">completed</span>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const PatientList = ({ role }) => {
-    return (
-        <div className="tab-content">
-            <div className="page-header">
-                <h1>{role === 'doctor' ? 'My Patients' : 'Patient List'}</h1>
-                <p className="page-sub">
-                    {role === 'doctor'
-                        ? 'Overview of patients under your care.'
-                        : 'All patients currently assigned to your ward.'}
-                </p>
-            </div>
-            <div className="stat-grid">
-                <div className="stat-card">
-                    <div className="stat-icon">🏥</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Total Patients</span>
-                        <span className="stat-value">5</span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--critical">
-                    <div className="stat-icon">🔴</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Critical</span>
-                        <span className="stat-value">1</span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--warning">
-                    <div className="stat-icon">🟡</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Monitoring</span>
-                        <span className="stat-value">1</span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--normal">
-                    <div className="stat-icon">🟢</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Stable</span>
-                        <span className="stat-value">3</span>
-                    </div>
-                </div>
-            </div>
-            <div className="section-title">Patient Records</div>
-            <div className="table-wrapper">
-                <table className="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Age</th>
-                            <th>Health Issue</th>
-                            <th>Room</th>
-                            <th>Status</th>
-                            {role === 'doctor' && <th>Action</th>}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Maria Gonzalez</strong></td>
-                            <td>45</td>
-                            <td>Hypertension</td>
-                            <td>201</td>
-                            <td><span className="badge-status badge-confirmed">stable</span></td>
-                            {role === 'doctor' && <td><button className="action-btn">View Chart</button></td>}
-                        </tr>
-                        <tr>
-                            <td><strong>David Kim</strong></td>
-                            <td>62</td>
-                            <td>Diabetes Type II</td>
-                            <td>114</td>
-                            <td><span className="badge-status badge-critical">critical</span></td>
-                            {role === 'doctor' && <td><button className="action-btn">View Chart</button></td>}
-                        </tr>
-                        <tr>
-                            <td><strong>Susan Park</strong></td>
-                            <td>38</td>
-                            <td>Asthma</td>
-                            <td>308</td>
-                            <td><span className="badge-status badge-confirmed">stable</span></td>
-                            {role === 'doctor' && <td><button className="action-btn">View Chart</button></td>}
-                        </tr>
-                        <tr>
-                            <td><strong>Robert Torres</strong></td>
-                            <td>71</td>
-                            <td>Post-Surgery</td>
-                            <td>220</td>
-                            <td><span className="badge-status badge-pending">monitoring</span></td>
-                            {role === 'doctor' && <td><button className="action-btn">View Chart</button></td>}
-                        </tr>
-                        <tr>
-                            <td><strong>Lisa Nguyen</strong></td>
-                            <td>29</td>
-                            <td>Anemia</td>
-                            <td>145</td>
-                            <td><span className="badge-status badge-confirmed">stable</span></td>
-                            {role === 'doctor' && <td><button className="action-btn">View Chart</button></td>}
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-};
-
-const DoctorOverview = ({ user }) => {
-    const userName = user && user.name ? user.name : 'Doctor';
-
-    return (
-        <div className="tab-content">
-            <div className="page-header">
-                <h1>Welcome, Dr. {userName} 👋</h1>
-                <p className="page-sub">Here's your clinical summary for today.</p>
-            </div>
-            <div className="stat-grid">
-                <div className="stat-card">
-                    <div className="stat-icon">👥</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Total Patients</span>
-                        <span className="stat-value">5</span>
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-icon">📅</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Appointments Today</span>
-                        <span className="stat-value">3</span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--critical">
-                    <div className="stat-icon">🔴</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Critical Alerts</span>
-                        <span className="stat-value">1</span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--normal">
-                    <div className="stat-icon">✅</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Discharged Today</span>
-                        <span className="stat-value">2</span>
-                    </div>
-                </div>
-            </div>
-            <div className="section-title">Today's Schedule</div>
-            <div className="card-list">
-                <div className="list-row">
-                    <div className="list-row-left">
-                        <div className="appt-date">Today <span className="appt-time">9:00 AM</span></div>
-                        <div className="appt-doctor">Maria Gonzalez</div>
-                        <div className="appt-type">Follow-up - Hypertension</div>
-                    </div>
-                    <span className="badge-status badge-confirmed">confirmed</span>
-                </div>
-                <div className="list-row">
-                    <div className="list-row-left">
-                        <div className="appt-date">Today <span className="appt-time">11:30 AM</span></div>
-                        <div className="appt-doctor">David Kim</div>
-                        <div className="appt-type">Review - Diabetes Management</div>
-                    </div>
-                    <span className="badge-status badge-confirmed">confirmed</span>
-                </div>
-                <div className="list-row">
-                    <div className="list-row-left">
-                        <div className="appt-date">Today <span className="appt-time">3:00 PM</span></div>
-                        <div className="appt-doctor">Lisa Nguyen</div>
-                        <div className="appt-type">Initial Consult - Anemia</div>
-                    </div>
-                    <span className="badge-status badge-pending">pending</span>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const NurseOverview = ({ user }) => {
-    const userName = user && user.name ? user.name : 'Nurse';
-
-    return (
-        <div className="tab-content">
-            <div className="page-header">
-                <h1>Welcome, {userName} 👋</h1>
-                <p className="page-sub">Shift summary and patient status.</p>
-            </div>
-            <div className="stat-grid">
-                <div className="stat-card">
-                    <div className="stat-icon">👥</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Assigned Patients</span>
-                        <span className="stat-value">5</span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--critical">
-                    <div className="stat-icon">🔴</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Critical</span>
-                        <span className="stat-value">1</span>
-                    </div>
-                </div>
-                <div className="stat-card stat-card--warning">
-                    <div className="stat-icon">💊</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Meds Due</span>
-                        <span className="stat-value">3</span>
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-icon">📋</div>
-                    <div className="stat-body">
-                        <span className="stat-label">Tasks Pending</span>
-                        <span className="stat-value">4</span>
-                    </div>
-                </div>
-            </div>
-            <div className="section-title">Vitals Due</div>
-            <div className="table-wrapper">
-                <table className="data-table">
-                    <thead>
-                        <tr>
-                            <th>Patient</th>
-                            <th>Room</th>
-                            <th>Last Recorded</th>
-                            <th>Due</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Maria Gonzalez</td>
-                            <td>201</td>
-                            <td>2h ago</td>
-                            <td><span className="badge-warning">Now</span></td>
-                        </tr>
-                        <tr>
-                            <td>David Kim</td>
-                            <td>114</td>
-                            <td>1h ago</td>
-                            <td><span className="badge-normal">30 min</span></td>
-                        </tr>
-                        <tr>
-                            <td>Robert Torres</td>
-                            <td>220</td>
-                            <td>3h ago</td>
-                            <td><span className="badge-warning">Overdue</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-};
-
-const NurseVitalsLog = () => {
-    const [formData, setFormData] = useState({
-        patientId: '',
-        heartRate: '',
-        bloodPressure: '',
-        temperature: '',
-        spo2: '',
-        notes: ''
-    });
-    const [submitted, setSubmitted] = useState(false);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch("http://localhost:8080/api/vitals/log", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                setSubmitted(true);
-                setTimeout(() => setSubmitted(false), 3000);
-                setFormData({ patientId: '', heartRate: '', bloodPressure: '', temperature: '', spo2: '', notes: '' });
-            } else {
-                alert("Failed to save vitals.");
-            }
-        } catch (error) {
-            console.error("Connection failed:", error);
-            alert("Could not connect to the server. Is your backend running?");
-        }
-    };
-
-    return (
-        <div className="tab-content">
-            <div className="page-header">
-                <h1>Vitals Log</h1>
-                <p className="page-sub">Record patient vitals during your shift.</p>
-            </div>
-            {submitted && (
-                <div className="success-banner">Vitals recorded successfully!</div>
-            )}
-            <div className="form-card">
-                <form onSubmit={handleSubmit} className="vitals-form">
-                    <div className="form-grid-2">
-                        <div className="input-group full-width">
-                            <label>Patient</label>
-                            <select
-                                name="patientId"
-                                value={formData.patientId}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="">Select Patient</option>
-                                <option value="1">Maria Gonzalez - Room 201</option>
-                                <option value="2">David Kim - Room 114</option>
-                                <option value="3">Susan Park - Room 308</option>
-                                <option value="4">Robert Torres - Room 220</option>
-                                <option value="5">Lisa Nguyen - Room 145</option>
-                            </select>
-                        </div>
-                        <div className="input-group">
-                            <label>Heart Rate (bpm)</label>
-                            <input
-                                type="number"
-                                name="heartRate"
-                                placeholder="e.g. 72"
-                                value={formData.heartRate}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label>Blood Pressure</label>
-                            <input
-                                type="text"
-                                name="bloodPressure"
-                                placeholder="e.g. 120/80"
-                                value={formData.bloodPressure}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label>Temperature (°F)</label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                name="temperature"
-                                placeholder="e.g. 98.6"
-                                value={formData.temperature}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label>SpO₂ (%)</label>
-                            <input
-                                type="number"
-                                name="spo2"
-                                placeholder="e.g. 98"
-                                value={formData.spo2}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="input-group full-width">
-                            <label>Clinical Notes</label>
-                            <textarea
-                                name="notes"
-                                placeholder="Observations, symptoms, alerts..."
-                                value={formData.notes}
-                                onChange={handleChange}
-                                rows={3}
-                            />
-                        </div>
-                    </div>
-                    <button type="submit" className="submit-btn">Save Vitals</button>
-                </form>
-            </div>
-        </div>
-    );
-};
-
-const Profile = ({ user }) => {
-    const userName = user && user.name ? user.name : '';
-    const userEmail = user && user.email ? user.email : '';
-    const userRole = user && user.role ? user.role : '';
-    const avatarLetter = userName ? userName[0].toUpperCase() : 'U';
-
-    return (
-        <div className="tab-content">
-            <div className="page-header">
-                <h1>My Profile</h1>
-                <p className="page-sub">Your account information.</p>
-            </div>
-            <div className="form-card">
-                <div className="profile-avatar-lg">{avatarLetter}</div>
-                <div className="form-grid-2" style={{ marginTop: '1.5rem' }}>
-                    <div className="input-group">
-                        <label>Name</label>
-                        <input type="text" value={userName} readOnly />
-                    </div>
-                    <div className="input-group">
-                        <label>Role</label>
-                        <input type="text" value={userRole} readOnly />
-                    </div>
-                    <div className="input-group full-width">
-                        <label>Email</label>
-                        <input type="email" value={userEmail} readOnly />
-                    </div>
-                </div>
-                <p className="profile-note">To update your information please contact your system administrator.</p>
-            </div>
-        </div>
-    );
-};
-
-const Dashboard = ({ user, navigate }) => {
-    const [activeTab, setActiveTab] = useState('overview');
-
-    const role = user && user.role ? user.role : 'patient';
-
-    const renderContent = () => {
-        if (role === 'patient') {
-            if (activeTab === 'overview') return <PatientOverview user={user} />;
-            if (activeTab === 'vitals') return <PatientVitals />;
-            if (activeTab === 'appointments') return <Appointments role="patient" />;
-            if (activeTab === 'profile') return <Profile user={user} />;
-        }
-        if (role === 'doctor') {
-            if (activeTab === 'overview') return <DoctorOverview user={user} />;
-            if (activeTab === 'patients') return <PatientList role="doctor" />;
-            if (activeTab === 'appointments') return <Appointments role="doctor" />;
-            if (activeTab === 'profile') return <Profile user={user} />;
-        }
-        if (role === 'nurse') {
-            if (activeTab === 'overview') return <NurseOverview user={user} />;
-            if (activeTab === 'patients') return <PatientList role="nurse" />;
-            if (activeTab === 'vitals') return <NurseVitalsLog />;
-            if (activeTab === 'profile') return <Profile user={user} />;
-        }
-        return <PatientOverview user={user} />;
-    };
-
-    const today = new Date().toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-
-    return (
-        <div className="dashboard-layout">
-            <Sidebar
-                user={user}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                navigate={navigate}
-            />
-            <main className="dashboard-main">
-                <div className="topbar">
-                    <div className="topbar-left">
-                        <span className="topbar-date">{today}</span>
-                    </div>
-                    <div className="topbar-right">
-                        <div className="topbar-alert">
-                            🔔
-                            <span className="alert-dot" />
-                        </div>
-                    </div>
-                </div>
-                {renderContent()}
-            </main>
-        </div>
-    );
+      </main>
+    </div>
+  );
 };
 
 export default Dashboard;
+

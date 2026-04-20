@@ -1,8 +1,9 @@
 package com.patientlink.backend;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-
+@Document(collection = "users")
 
 public class User {
     @Id
@@ -15,10 +16,11 @@ public class User {
     private String gender;
     private String contactNumber;
     private String address;
+    private String role;
 
     public User() {}
     
-    public User(String id, String firstName, String lastName, String email, String password, String dob, String gender, String contactNumber, String address) {
+    public User(String id, String firstName, String lastName, String email, String password, String dob, String gender, String contactNumber, String address, String role) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -28,6 +30,7 @@ public class User {
         this.gender = gender;
         this.contactNumber = contactNumber;
         this.address = address;
+        this.role = role;
     }
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -47,6 +50,8 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
 
 

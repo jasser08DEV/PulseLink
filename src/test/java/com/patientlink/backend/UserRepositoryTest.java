@@ -13,9 +13,10 @@ public class UserRepositoryTest {
     @Test
     public void testFindByEmail() {
         
-        User user = new User("1", "John", "Doe", "john.doe@example.com", "password","2025-03-13", "Male", "1234567890", "123 Main St");
+       // Add the 10th argument: "PATIENT"
+        User user = new User("1", "Mo", "Abdou", "mo@example.com", "pass123", "01/01/2000", "Male", "1234567890", "Jacksonville", "PATIENT");
         userRepository.save(user);
-        User foundUser = userRepository.findByEmail("john.doe@example.com");
-        assertThat(foundUser.getFirstName()).isEqualTo("John");
+        User foundUser = userRepository.findByEmail("mo@example.com");
+        assertThat(foundUser.getFirstName()).isEqualTo("Mo");
     }
 }

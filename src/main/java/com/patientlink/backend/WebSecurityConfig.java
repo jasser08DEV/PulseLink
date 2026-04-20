@@ -15,15 +15,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity // Required to enable Spring Security
+@EnableWebSecurity 
 public class WebSecurityConfig {
 
     @Autowired
-    private AuthEntryPointJwt unauthorizedHandler; // The "Bouncer" we built earlier
-
+    private AuthEntryPointJwt unauthorizedHandler;
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter(); // The "Gatekeeper"
+        return new AuthTokenFilter(); 
     }
 
     @Bean
@@ -40,12 +39,19 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable) 
-            .cors(AbstractHttpConfigurer::disable) 
+            .cors(cors -> cors.configurationSource(request -> {
+            var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+            corsConfiguration.setAllowedOriginPatterns(java.util.List.of("*")); 
+            corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
+            corsConfiguration.setAllowCredentials(true);
+            return corsConfiguration;
+        }))
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() 
-                .requestMatchers("/api/welcome").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll() 
+                .requestMatchers("/api/v1/welcome").permitAll()
                 .anyRequest().authenticated() 
             );
 

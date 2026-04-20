@@ -1,22 +1,24 @@
 package com.patientlink.backend;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class JwtUtilTest {
-    private JwtUtil jwtUtil;
-    
-    public void setUp() {
-        jwtUtil.init();
-    }
+
+    @Autowired
+    private JwtUtil jwtUtil; 
 
     @Test
     public void testGenerateToken() {
         String token = jwtUtil.generateToken("Bill");
         assertNotNull(token);
-        assertTrue(!token.isEmpty());
+        assertFalse(token.isEmpty());
     }
 
     @Test
@@ -30,6 +32,6 @@ public class JwtUtilTest {
     public void testValidateToken() {
         String token = jwtUtil.generateToken("Bill");
         boolean valid = jwtUtil.validateToken(token);
-        assertEquals(true, valid);
+        assertTrue(valid);
     }
 }

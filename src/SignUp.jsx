@@ -62,12 +62,14 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = { ...formData, role: "PATIENT" };
 
     try {
-      const response = await fetch("http://localhost:8080/api/signup", {
+      const response = await fetch("http://10.0.0.116:8080/api/v1/auth/signup", {
         method: "POST",
+        
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       const message = await response.text();
       if (response.ok) {
