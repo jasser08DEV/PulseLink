@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +28,7 @@ public class SecurityFilterIntegrationTest {
         testUser.setId("P8821x");
         testUser.setEmail("test@pulse.com");
         testUser.setPassword("encodedPassword");
+        testUser.setRole("PATIENT");
         userRepository.save(testUser);
     }
 
@@ -41,7 +41,7 @@ public class SecurityFilterIntegrationTest {
     @Test
     public void accessMeWithValidToken_ShouldReturn200() throws Exception {
         String token = jwtUtil.generateToken("P8821x");
-        
+
         mockMvc.perform(get("/api/users/me")
                .header("Authorization", "Bearer " + token))
                .andExpect(status().isOk());
@@ -50,7 +50,7 @@ public class SecurityFilterIntegrationTest {
     @Test
     public void accessMeWithTamperedToken_ShouldReturn401() throws Exception {
         String token = jwtUtil.generateToken("P8821x") + "tampered";
-        
+
         mockMvc.perform(get("/api/users/me")
                .header("Authorization", "Bearer " + token))
                .andExpect(status().isUnauthorized());

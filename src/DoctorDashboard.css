@@ -1,0 +1,4 @@
+@import './dashboard-shared.css';
+
+/* ── Doctor sidebar (dark slate) ── */
+.db-sidebar { background: #1e2a3a; }

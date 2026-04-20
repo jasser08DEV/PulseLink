@@ -4,7 +4,7 @@ public class Patient extends User {
     private String healthIssue;
 
     public Patient(String id, String firstName, String lastName, String email, String password, String dob, String gender, String contactNumber, String address, String healthIssue) {
-        super(id, firstName, lastName, email, password, dob, gender, contactNumber, address);
+        super(id, firstName, lastName, email, password, dob, gender, contactNumber, address , "PATIENT");
         this.healthIssue = healthIssue;
     }
 
