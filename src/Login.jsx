@@ -21,25 +21,26 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.username || !formData.password) {
+    if (!formData.identifier || !formData.password) {
       setError("Please fill in all fields.");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/login", {
+      const response = await fetch("http://10.0.0.116:8080/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identifier: formData.identifier,
+          email: formData.identifier,
           password: formData.password,
         }),
       });
 
       const message = await response.text();
 
-      if (response.ok && message === "Login Successful!") {
-        navigate("/"); 
+      if (response.ok) {
+        alert("successfully logged in");
+        navigate("/dashboard");
       } else {
         setError(message || "Invalid credentials. Please try again.");
       }
@@ -51,7 +52,6 @@ const Login = () => {
   return (
     <div className="main-Container">
       <div className="login-container">
-
         <div className="header">
           <div className="nav-logo">
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -71,11 +71,11 @@ const Login = () => {
         </div>
 
         <form className="login-Form" onSubmit={handleSubmit}>
-
           <label htmlFor="identifier">Username</label>
           <input
             type="text"
             id="identifier"
+            name="identifier"
             value={formData.identifier}
             onChange={handleChange}
             placeholder="Enter your email or ID"
@@ -93,7 +93,9 @@ const Login = () => {
             required
           />
 
-          <a href="#" className="forgot-link">Forgot password?</a>
+          <a href="#" className="forgot-link">
+            Forgot password?
+          </a>
 
           {error && <p className="error-msg">{error}</p>}
 
@@ -104,9 +106,7 @@ const Login = () => {
           <p className="signup-Link">
             Don't have an account? <Link to="/signup">Sign Up</Link>
           </p>
-
         </form>
-
       </div>
     </div>
   );
