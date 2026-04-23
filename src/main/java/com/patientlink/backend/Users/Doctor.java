@@ -1,4 +1,4 @@
-package com.patientlink.backend;
+package com.patientlink.backend.Users;
 
 public class Doctor extends User{
     private String department;

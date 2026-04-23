@@ -20,6 +20,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (!formData.identifier || !formData.password) {
       setError("Please fill in all fields.");
@@ -36,13 +37,26 @@ const Login = () => {
         }),
       });
 
-      const message = await response.text();
+      const data = await response.json();
+      console.log("Full API response:", JSON.stringify(data));
+      const userRole = (data.role || data.user?.role || data.userRole || "").toUpperCase().trim();
+
 
       if (response.ok) {
-        alert("successfully logged in");
-        navigate("/dashboard");
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", userRole);
+        
+        if (userRole === "PATIENT") {
+            window.location.href = "/dashboard";
+        } else if (userRole === "DOCTOR") {
+            window.location.href = "/doctor-dashboard"; 
+        } else if (userRole === "NURSE") {
+            window.location.href = "/nurse-dashboard";  
+        } else {
+           setError(`Role "${data.role}" not recognized.`);
+    }
       } else {
-        setError(message || "Invalid credentials. Please try again.");
+        setError(data.message || "Invalid credentials. Please try again.");
       }
     } catch (err) {
       setError("Could not connect to the server. Is your backend running?");

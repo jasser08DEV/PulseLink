@@ -1,14 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
 
-const patient = {
-  name: "Patient A",
-  id: "MRN-8821-X",
-  age: 34,
-  ward: "Cardiology — Ward B",
-  doctor: "Doctor B",
-  avatar: "PA",
-};
+
 
 const vitals = [
   { label: "Heart Rate", value: "78", unit: "bpm", status: "normal", icon: "♥" },
@@ -79,6 +72,42 @@ const navItems = [
 ];
 
 const Dashboard = () => {
+  const [userData, setUserData] = useState(null);
+useEffect(() => {
+  const fetchProfile = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "/login";
+    return;
+  }
+  
+  try {
+    const response = await fetch("http://10.0.0.116:8080/api/users/me", {
+      method: "GET",
+      headers: { 
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setUserData(data);
+    } else {
+      console.error("Failed to fetch user data");
+    }
+  } catch (err) {
+    console.error("could not connect to server", err);
+  }
+};
+fetchProfile();
+}, 
+[]);
+
+const displayInfo = {
+    name: userData ? `${userData.firstName} ${userData.lastName}` : "Loading...",
+    id: userData?.id || "P-XXXXXXXX",
+    role: userData?.role || "USER"
+  };
   const [activeSection, setActiveSection] = useState("home");
   const [meds, setMeds] = useState(medications);
   const [dismissedAlerts, setDismissedAlerts] = useState([]);
@@ -120,10 +149,10 @@ const Dashboard = () => {
         </nav>
 
         <div className="db-sidebar-footer">
-          <div className="db-avatar">{patient.avatar}</div>
+          <div className="db-avatar">👤</div>
           <div className="db-sidebar-patient">
-            <div className="db-sidebar-name">{patient.name}</div>
-            <div className="db-sidebar-id">{patient.id}</div>
+            <div className="db-sidebar-name">{displayInfo.name}</div>
+            <div className="db-sidebar-id">{displayInfo.id}</div>
           </div>
         </div>
       </aside>
@@ -150,9 +179,9 @@ const Dashboard = () => {
               <div className="db-welcome">
                 <div>
                   <div className="db-welcome-greeting">Good morning,</div>
-                  <div className="db-welcome-name">{patient.name}</div>
+                  <div className="db-welcome-name">{userData?.firstName} {userData?.lastName}</div>
                   <div className="db-welcome-meta">
-                    {patient.ward} &nbsp;·&nbsp; Under care of {patient.doctor}
+                    Role: {userData?.role || "PATIENT"} &nbsp;·&nbsp; ID: {userData?.id}
                   </div>
                 </div>
                 <div className="db-welcome-stats">

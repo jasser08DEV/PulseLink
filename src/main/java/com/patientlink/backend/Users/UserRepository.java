@@ -1,4 +1,5 @@
-package com.patientlink.backend;
+package com.patientlink.backend.Users;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 public interface UserRepository extends MongoRepository<User, String> {
     User findByEmail(String email);

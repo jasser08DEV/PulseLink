@@ -1,0 +1,4 @@
+@import './dashboard-shared.css';
+
+/* ── Nurse sidebar ── */
+.db-sidebar { background: #1a1a18; }

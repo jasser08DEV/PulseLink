@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./NurseDashboard.css";
 
 // ── Mock Data ────────────────────────────────────────────────
@@ -71,7 +71,23 @@ const alertBorder = t => t === "critical" ? "db-alert-card--critical" : t === "c
 const alertDot    = t => t === "critical" ? "db-alert-dot--critical" : t === "caution" ? "db-alert-dot--caution" : "db-alert-dot--info";
 const initials    = name => name.split(" ").map(w => w[0]).join("");
 
-export default function NurseDashboard({ navigate }) {
+function NurseDashboard({ navigate }) {
+  const [nurseData, setNurseData] = useState(null);
+  useEffect(() => {
+    const fetchNurse = async () => {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://10.0.0.116:8080/api/users/me", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setNurseData(data);
+      }
+    };
+    fetchNurse();
+  }, []);
+
+
   const [active, setActive]     = useState("home");
   const [tasks, setTasks]       = useState(tasksInit);
   const [dismissed, setDismiss] = useState([]);
@@ -124,10 +140,12 @@ export default function NurseDashboard({ navigate }) {
         </nav>
 
         <div className="db-sidebar-footer">
-          <div className="db-avatar">{nurse.avatar}</div>
+          <div className="db-avatar">
+            {nurseData ? `${nurseData.firstName[0]}${nurseData.lastName[0]}` : "⟳"}
+          </div>
           <div>
-            <div className="db-sidebar-name">{nurse.name}</div>
-            <div className="db-sidebar-sub">{nurse.ward}</div>
+            <div className="db-sidebar-name">{nurseData ? `${nurseData.firstName} ${nurseData.lastName}` : "Loading..."}</div>
+            <div className="db-sidebar-sub">{nurseData?.id} · {nurseData?.role}</div>
           </div>
         </div>
       </aside>
@@ -438,3 +456,5 @@ export default function NurseDashboard({ navigate }) {
     </div>
   );
 }
+  export default NurseDashboard;
+

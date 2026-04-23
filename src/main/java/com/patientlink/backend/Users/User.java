@@ -1,4 +1,5 @@
-package com.patientlink.backend;
+package com.patientlink.backend.Users;
+
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

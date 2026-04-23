@@ -1,4 +1,4 @@
-package com.patientlink.backend;
+package com.patientlink.backend.Users;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

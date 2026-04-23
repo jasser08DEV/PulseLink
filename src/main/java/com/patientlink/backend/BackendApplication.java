@@ -2,8 +2,6 @@ package com.patientlink.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -12,9 +10,6 @@ public class BackendApplication {
 		System.setProperty("server.address", "0.0.0.0");
 		SpringApplication.run(BackendApplication.class, args);
 	}
-	@Bean
-	public SimpleMongoClientDatabaseFactory mongoDbFactory() {
-    	return new SimpleMongoClientDatabaseFactory("mongodb://10.0.0.116:27017/patient_system");
-	}
+	
 
 }
