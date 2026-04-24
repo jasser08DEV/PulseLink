@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import "./Dashboard.css";
 
 
@@ -102,6 +102,26 @@ useEffect(() => {
 fetchProfile();
 }, 
 []);
+
+
+const [pulseHistory, setPulseHistory] = useState([]);
+useEffect(() => {
+  const fetchPulse = async () => {
+  try {
+    const patientId = localStorage.getItem("identifier");
+    const response = await fetch(`http://10.0.0.116:8080/api/v1/vitals/pulse/${patientId}`);
+    const data = await response.json();
+    setPulseHistory(data); 
+  } catch (err) {
+    console.error("Failed to fetch pulse data", err);
+  }
+};
+
+useEffect(() => {
+  fetchPulseHistory();
+  const interval = setInterval(fetchPulseHistory, 5000);
+  return () => clearInterval(interval);
+}, []);
 
 const displayInfo = {
     name: userData ? `${userData.firstName} ${userData.lastName}` : "Loading...",
