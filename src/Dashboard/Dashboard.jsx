@@ -83,14 +83,16 @@ const Dashboard = () => {
   const latestBpm = pulseHistory.length > 0 ? pulseHistory[pulseHistory.length - 1].heartRate : "--";
   const heartGraph = pulseHistory.length > 1 ? pulseHistory.map(d => d.heartRate) : [72, 72];
 
-  const vitals = [
-    { label: "Heart Rate", value: latestBpm, unit: "bpm", status: "normal" },
-    { label: "Blood Pressure", value: "118/76", unit: "mmHg", status: "normal" },
-    { label: "Temperature", value: "37.1", unit: "°C", status: "normal" },
-    { label: "SpO₂", value: "98", unit: "%", status: "normal" },
-    { label: "Glucose", value: "112", unit: "mg/dL", status: "caution" },
-    { label: "Respiratory", value: "16", unit: "breaths/min", status: "normal" },
-  ];
+ const latestData = pulseHistory.length > 0 ? pulseHistory[pulseHistory.length - 1] : null;
+
+const vitals = [
+  { label: "Heart Rate", value: latestData?.heartRate || "--", unit: "bpm", status: "normal" },
+  { label: "Blood Pressure", value: latestData?.bloodPressure || "--", unit: "mmHg", status: "normal" },
+  { label: "Temperature", value: latestData?.bodyTemperature || "--", unit: "°C", status: "normal" },
+  { label: "SpO₂", value: latestData?.spo2 || "--", unit: "%", status: "normal" },
+  { label: "Glucose", value: latestData?.glucoseLevel || "--", unit: "mg/dL", status: "caution" },
+  { label: "Respiratory", value: latestData?.respiratoryRate || "--", unit: "breaths/min", status: "normal" },
+];
 
   const toggleMed = (id) => setMeds(meds.map(m => m.id === id ? { ...m, taken: !m.taken } : m));
   const dismissAlert = (id) => setDismissedAlerts([...dismissedAlerts, id]);

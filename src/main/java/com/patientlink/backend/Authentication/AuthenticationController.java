@@ -1,6 +1,5 @@
 package com.patientlink.backend.Authentication;
 
-
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -30,11 +29,10 @@ public class AuthenticationController {
     private final JwtUtil jwtUtil;
 
     public AuthenticationController(
-        AuthenticationManager authenticationManager,
-        UserRepository userRepository,
-        PasswordEncoder encoder,
-        JwtUtil jwtUtil
-    ){
+            AuthenticationManager authenticationManager,
+            UserRepository userRepository,
+            PasswordEncoder encoder,
+            JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.encoder = encoder;
@@ -54,26 +52,24 @@ public class AuthenticationController {
             shortId = RandomStringUtils.random(8, "0123456789abcdef");
             generatedId = "P" + shortId;
         }
-        
+
         user.setId(generatedId);
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
 
         return ResponseEntity.ok(Map.of(
-            "message", "User registered successfully!",
-            "patientId", generatedId
-        ));
+                "message", "User registered successfully!",
+                "patientId", generatedId));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
-        String loginIdentifier = (user.getEmail() != null && !user.getEmail().isEmpty()) 
-                                 ? user.getEmail() 
-                                 : user.getId();
+        String loginIdentifier = (user.getEmail() != null && !user.getEmail().isEmpty())
+                ? user.getEmail()
+                : user.getId();
 
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginIdentifier, user.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(loginIdentifier, user.getPassword()));
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwt = jwtUtil.generateToken(userDetails.getUsername());
@@ -83,14 +79,22 @@ public class AuthenticationController {
             authenticatedUser = userRepository.findById(userDetails.getUsername()).orElse(null);
         }
 
-        System.out.println("DEBUG - Role found for " + userDetails.getUsername() + " is: " + 
-                  (authenticatedUser != null ? authenticatedUser.getRole() : "NULL"));
+        System.out.println("DEBUG - Role found for " + userDetails.getUsername() + " is: " +
+                (authenticatedUser != null ? authenticatedUser.getRole() : "NULL"));
 
         return ResponseEntity.ok(Map.of(
-            "token", jwt,
-            "type", "Bearer",
-            "identifier", userDetails.getUsername(),
-            "role", authenticatedUser != null ? authenticatedUser.getRole() : "UNKNOWN"
-        ));
+                "token", jwt,
+                "type", "Bearer",
+                "identifier", authenticatedUser != null ? authenticatedUser.getId() : userDetails.getUsername(),
+                "role", authenticatedUser != null ? authenticatedUser.getRole() : "UNKNOWN"));
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+        User user = userRepository.findByEmail(username);
+        if (user == null)
+            user = userRepository.findById(username).orElse(null);
+        return ResponseEntity.ok(user);
     }
 }

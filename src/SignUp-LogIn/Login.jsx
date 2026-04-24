@@ -45,6 +45,7 @@ const Login = () => {
       if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", userRole);
+        localStorage.setItem("identifier", data.identifier);
         
         if (userRole === "PATIENT") {
             window.location.href = "/dashboard";
