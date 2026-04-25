@@ -38,26 +38,30 @@ const Login = () => {
       });
 
       const data = await response.json();
-      console.log("Full API response:", JSON.stringify(data));
-      const userRole = (data.role || data.user?.role || data.userRole || "").toUpperCase().trim();
+      console.log("Role raw value:", JSON.stringify(data.role));
+      
 
+      const userRole = (data.role || "").toUpperCase().trim(); //
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", userRole);
         localStorage.setItem("identifier", data.identifier);
-        
+
+        // Log exactly what we are checking against
+        console.log("Checking Role:", userRole);
+
         if (userRole === "PATIENT") {
-            window.location.href = "/dashboard";
+          window.location.href = "/dashboard";
         } else if (userRole === "DOCTOR") {
-            window.location.href = "/doctor-dashboard"; 
+          window.location.href = "/doctor-dashboard";
         } else if (userRole === "NURSE") {
-            window.location.href = "/nurse-dashboard";  
+          window.location.href = "/nurse-dashboard"; //
         } else {
-           setError(`Role "${data.role}" not recognized.`);
-    }
-      } else {
-        setError(data.message || "Invalid credentials. Please try again.");
+          setError(
+            `Access Denied: Role "${userRole}" is not authorized for a portal.`,
+          );
+        }
       }
     } catch (err) {
       setError("Could not connect to the server. Is your backend running?");

@@ -15,14 +15,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity 
+@EnableWebSecurity
 public class WebSecurityConfig {
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter(); 
+        return new AuthTokenFilter();
     }
 
     @Bean
@@ -38,24 +39,29 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable) 
-            .cors(cors -> cors.configurationSource(request -> {
-            var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-            corsConfiguration.setAllowedOriginPatterns(java.util.List.of("*")); 
-            corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
-            corsConfiguration.setAllowCredentials(true);
-            return corsConfiguration;
-        }))
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**").permitAll() 
-                .requestMatchers("/api/v1/welcome").permitAll()
-                .anyRequest().authenticated() 
-            );
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> {
+                    var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+                    corsConfiguration.setAllowedOriginPatterns(java.util.List.of("*"));
+                    corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
+                    corsConfiguration.setAllowCredentials(true);
+                    return corsConfiguration;
+                }))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // 1. Public Endpoints
+                        .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login", "/api/v1/welcome").permitAll()
 
-       
+                        .requestMatchers("/api/v1/auth/me").authenticated()
+
+                        .requestMatchers("/api/v1/medication/prescribe").hasAnyAuthority("DOCTOR", "ROLE_DOCTOR")
+
+                        .requestMatchers("/api/v1/medication/**").authenticated()
+
+                        .anyRequest().authenticated());
+
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

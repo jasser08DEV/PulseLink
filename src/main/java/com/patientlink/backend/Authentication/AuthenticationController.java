@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,12 +90,12 @@ public class AuthenticationController {
                 "role", authenticatedUser != null ? authenticatedUser.getRole() : "UNKNOWN"));
     }
 
-    @PostMapping("/me")
+    @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
-        String username = authentication.getName();
-        User user = userRepository.findByEmail(username);
+        String loginId = authentication.getName();
+        User user = userRepository.findByEmail(loginId);
         if (user == null)
-            user = userRepository.findById(username).orElse(null);
+            user = userRepository.findById(loginId).orElse(null);
         return ResponseEntity.ok(user);
     }
 }
