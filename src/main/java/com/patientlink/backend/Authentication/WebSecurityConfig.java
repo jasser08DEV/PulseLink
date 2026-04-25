@@ -60,6 +60,10 @@ public class WebSecurityConfig {
 
                         .requestMatchers("/api/v1/medication/**").authenticated()
 
+                        .requestMatchers("/api/v1/procedure/assign").hasAllAuthorities("DOCTOR","ROLE_DOCTOR", "NURSE", "ROLE_NURSE ")
+                        
+                        .requestMatchers("/api/v1/procedure/**").authenticated()
+
                         .anyRequest().authenticated());
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
