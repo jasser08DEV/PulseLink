@@ -22,6 +22,11 @@ public class AppointmentController {
         this.repository = repository;
     }
 
+    @GetMapping
+    public List<AppointmentData> getAllAppointments() {
+        return repository.findAll();
+    }
+
     @PostMapping("/schedule")
     public AppointmentData scheduleAppointment(@RequestBody AppointmentData appointment) {
         return repository.save(appointment);

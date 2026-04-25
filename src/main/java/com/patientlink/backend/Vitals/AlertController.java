@@ -1,6 +1,7 @@
 package com.patientlink.backend.Vitals;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,5 +27,10 @@ public class AlertController {
             .filter(p -> p.getHeartRate() > 100 || p.getSpo2() < 95)
             .map(p -> Map.of("type", "critical", "message", "Vitals out of range", "time", "Just now"))
             .collect(Collectors.toList());
+    }
+
+    @GetMapping("/all")
+    public List<Object> getAllAlerts() {
+        return new ArrayList<>();
     }
 }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./NurseDashboard.css";
 
-// ─── API Config ───────────────────────────────────────────────────────────────
 const API = "http://10.0.0.116:8080/api/v1";
 const authFetch = (url, options = {}) => {
   const token = localStorage.getItem("token");
@@ -15,13 +14,11 @@ const authFetch = (url, options = {}) => {
   });
 };
 
-// ─── Static task init (no patient dependency) ─────────────────────────────────
 const TASKS_INIT = [
   { id: 1, text: "Submit shift handover report", done: false, priority: "medium" },
   { id: 2, text: "Restock supply cart — Bay 2", done: false, priority: "low" },
 ];
 
-// ─── Nav ──────────────────────────────────────────────────────────────────────
 const NAV = [
   { id: "home",         label: "Overview",   icon: <HomeIcon /> },
   { id: "patients",    label: "Patients",   icon: <PatientsIcon /> },
@@ -33,113 +30,23 @@ const NAV = [
   { id: "reports",     label: "Reports",    icon: <ReportIcon /> },
 ];
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
-function HomeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
-      <polyline points="9 21 9 12 15 12 15 21" />
-    </svg>
-  );
-}
-function PatientsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
-}
-function HeartIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
-  );
-}
-function BellIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </svg>
-  );
-}
-function CalIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-    </svg>
-  );
-}
-function PillIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10.5 20.5 3.5 13.5a5 5 0 0 1 7.07-7.07l7 7a5 5 0 0 1-7.07 7.07z" />
-      <line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
-    </svg>
-  );
-}
-function TaskIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 11 12 14 22 4" />
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-    </svg>
-  );
-}
-function ReportIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-    </svg>
-  );
-}
-function LogoutIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <polyline points="16 17 21 12 16 7" />
-      <line x1="21" y1="12" x2="9" y2="12" />
-    </svg>
-  );
-}
-function PulseIcon() {
-  return (
-    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="2,16 7,16 10,9 13,23 16,13 19,19 22,16 30,16" />
-    </svg>
-  );
-}
-function PlusIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
+function HomeIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" /><polyline points="9 21 9 12 15 12 15 21" /></svg>; }
+function PatientsIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>; }
+function HeartIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>; }
+function BellIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>; }
+function CalIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>; }
+function PillIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10.5 20.5 3.5 13.5a5 5 0 0 1 7.07-7.07l7 7a5 5 0 0 1-7.07 7.07z" /><line x1="8.5" y1="8.5" x2="15.5" y2="15.5" /></svg>; }
+function TaskIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>; }
+function ReportIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>; }
+function LogoutIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>; }
+function PulseIcon() { return <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,16 7,16 10,9 13,23 16,13 19,19 22,16 30,16" /></svg>; }
+function PlusIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>; }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-const initials = (name) =>
-  name ? name.split(" ").map((w) => w[0]).join("").toUpperCase() : "?";
-const condColor = (c) =>
-  c === "Critical" ? "critical" : c === "Caution" ? "caution" : "normal";
+const initials = (name) => name ? name.split(" ").map((w) => w[0]).join("").toUpperCase() : "?";
+const condColor = (c) => c === "Critical" ? "critical" : c === "Caution" ? "caution" : "normal";
 
-const Badge = ({ label, variant = "normal" }) => (
-  <span className={`nd-badge nd-badge--${variant}`}>{label}</span>
-);
-const SectionHeading = ({ children }) => (
-  <h3 className="nd-section-heading">{children}</h3>
-);
+const Badge = ({ label, variant = "normal" }) => <span className={`nd-badge nd-badge--${variant}`}>{label}</span>;
+const SectionHeading = ({ children }) => <h3 className="nd-section-heading">{children}</h3>;
 const EmptyState = ({ icon, title, sub }) => (
   <div className="nd-empty-state">
     <div className="nd-empty-icon">{icon}</div>
@@ -148,32 +55,28 @@ const EmptyState = ({ icon, title, sub }) => (
   </div>
 );
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 function NurseDashboard({ navigate }) {
-  const [nurseData, setNurseData]     = useState(null);
-  const [active, setActive]           = useState("home");
-  const [sidebarOpen, setSidebar]     = useState(false);
-  const [selPatient, setSelPat]       = useState(null);
+  const [nurseData, setNurseData] = useState(null);
+  const [active, setActive] = useState("home");
+  const [sidebarOpen, setSidebar] = useState(false);
+  const [selPatient, setSelPat] = useState(null);
 
-  // Live data from API
-  const [patients, setPatients]       = useState([]);
-  const [alerts, setAlerts]           = useState([]);
-  const [appointments, setAppts]      = useState([]);
-  const [meds, setMeds]               = useState([]);
-  const [reports, setReports]         = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [liveVitals, setLiveVitals] = useState({}); 
+  const [alerts, setAlerts] = useState([]);
+  const [appointments, setAppts] = useState([]);
+  const [meds, setMeds] = useState([]);
+  const [reports, setReports] = useState([]);
 
-  // Local state
-  const [dismissed, setDismiss]       = useState([]);
-  const [tasks, setTasks]             = useState(TASKS_INIT);
-  const [newTask, setNewTask]         = useState("");
+  const [dismissed, setDismiss] = useState([]);
+  const [tasks, setTasks] = useState(TASKS_INIT);
+  const [newTask, setNewTask] = useState("");
 
-  // Add Patient modal
   const [showAddPatient, setShowAddPatient] = useState(false);
   const [addPatientForm, setAddPatientForm] = useState({ patientId: "" });
   const [addPatientLoading, setAddPatientLoading] = useState(false);
-  const [addPatientError, setAddPatientError]   = useState("");
+  const [addPatientError, setAddPatientError] = useState("");
 
-  // ── Fetch nurse profile ──────────────────────────────────────────────────
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { window.location.href = "/login"; return; }
@@ -186,7 +89,6 @@ function NurseDashboard({ navigate }) {
     })();
   }, []);
 
-  // ── Fetch patients under supervision ────────────────────────────────────
   useEffect(() => {
     (async () => {
       try {
@@ -196,20 +98,70 @@ function NurseDashboard({ navigate }) {
     })();
   }, []);
 
-  // ── Fetch alerts (poll every 10s) ────────────────────────────────────────
   useEffect(() => {
-    const fetchAlerts = async () => {
-      try {
-        const res = await authFetch(`${API}/alerts/all`);
-        if (res.ok) setAlerts(await res.json());
-      } catch (e) { console.error("Alerts:", e); }
+    const fetchAllVitals = async () => {
+      const updatedVitals = { ...liveVitals };
+      for (const p of patients) {
+        try {
+          const res = await authFetch(`${API}/vitals/pulse/${p.id}`);
+          if (res.ok) {
+            const history = await res.json();
+            if (history.length > 0) {
+              updatedVitals[p.id] = history[history.length - 1]; 
+            }
+          }
+        } catch (e) { console.error("Vitals error:", e); }
+      }
+      setLiveVitals(updatedVitals);
     };
-    fetchAlerts();
-    const iv = setInterval(fetchAlerts, 10000);
-    return () => clearInterval(iv);
-  }, []);
 
-  // ── Fetch appointments when tab is active ────────────────────────────────
+    if (patients.length > 0) {
+      fetchAllVitals();
+      const iv = setInterval(fetchAllVitals, 5000);
+      return () => clearInterval(iv);
+    }
+  }, [patients]);
+
+  useEffect(() => {
+    const generatedAlerts = [];
+    patients.forEach((p) => {
+      const v = liveVitals[p.id];
+      if (!v) return;
+
+      if (v.heartRate > 100) {
+        generatedAlerts.push({
+          id: `${p.id}-hr-${v.timestamp}`,
+          patientName: `${p.firstName} ${p.lastName}`,
+          room: p.room || "N/A",
+          type: "critical",
+          message: `Heart rate ${v.heartRate} bpm — exceeds normal threshold`,
+          time: "Just now",
+        });
+      }
+      if (v.spo2 < 95) {
+        generatedAlerts.push({
+          id: `${p.id}-spo2-${v.timestamp}`,
+          patientName: `${p.firstName} ${p.lastName}`,
+          room: p.room || "N/A",
+          type: "critical",
+          message: `SpO₂ at ${v.spo2}% — possible respiratory compromise`,
+          time: "Just now",
+        });
+      }
+      if (v.bodyTemperature > 38) {
+        generatedAlerts.push({
+          id: `${p.id}-temp-${v.timestamp}`,
+          patientName: `${p.firstName} ${p.lastName}`,
+          room: p.room || "N/A",
+          type: "caution",
+          message: `Temperature ${v.bodyTemperature}°C — elevated`,
+          time: "Just now",
+        });
+      }
+    });
+    setAlerts(generatedAlerts);
+  }, [liveVitals, patients]);
+
   useEffect(() => {
     if (active !== "appointments" && active !== "home") return;
     (async () => {
@@ -220,7 +172,6 @@ function NurseDashboard({ navigate }) {
     })();
   }, [active]);
 
-  // ── Fetch medications when tab is active ─────────────────────────────────
   useEffect(() => {
     if (active !== "medications") return;
     (async () => {
@@ -231,7 +182,6 @@ function NurseDashboard({ navigate }) {
     })();
   }, [active]);
 
-  // ── Fetch reports when tab is active ────────────────────────────────────
   useEffect(() => {
     if (active !== "reports") return;
     (async () => {
@@ -242,7 +192,6 @@ function NurseDashboard({ navigate }) {
     })();
   }, [active]);
 
-  // ── Add patient to supervision ───────────────────────────────────────────
   const addPatientToSupervise = async () => {
     if (!addPatientForm.patientId.trim()) return;
     setAddPatientLoading(true);
@@ -267,7 +216,6 @@ function NurseDashboard({ navigate }) {
     setAddPatientLoading(false);
   };
 
-  // ── Toggle medication ────────────────────────────────────────────────────
   const toggleMed = async (id) => {
     try {
       const res = await authFetch(`${API}/medication/toggle/${id}`, { method: "POST" });
@@ -278,36 +226,28 @@ function NurseDashboard({ navigate }) {
     } catch (e) { console.error(e); }
   };
 
-  // ── Task helpers ─────────────────────────────────────────────────────────
-  const toggleTask = (id) =>
-    setTasks((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+  const toggleTask = (id) => setTasks((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
   const addTask = () => {
     if (!newTask.trim()) return;
     setTasks((p) => [...p, { id: Date.now(), text: newTask, done: false, priority: "medium" }]);
     setNewTask("");
   };
 
-  // ── Alert helpers ────────────────────────────────────────────────────────
   const dismissAlert = (id) => setDismiss((p) => [...p, id]);
-  const visAlerts    = alerts.filter((a) => !dismissed.includes(a.id));
+  const visAlerts = alerts.filter((a) => !dismissed.includes(a.id));
   const criticalCount = visAlerts.filter((a) => a.type === "critical").length;
 
   const logout = () => { localStorage.clear(); window.location.href = "/login"; };
 
-  const dateStr = new Date().toLocaleDateString("en-US", {
-    weekday: "long", month: "long", day: "numeric", year: "numeric",
-  });
-
-  const givenMeds   = meds.filter((m) => m.given || m.takenToday).length;
+  const dateStr = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const givenMeds = meds.filter((m) => m.given || m.takenToday).length;
   const pendingAppts = appointments.filter((a) => a.status === "pending");
-  const doneTasks    = tasks.filter((t) => t.done).length;
+  const doneTasks = tasks.filter((t) => t.done).length;
 
-  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="nd-root">
       {sidebarOpen && <div className="nd-overlay" onClick={() => setSidebar(false)} />}
 
-      {/* ── Add Patient Modal ──────────────────────────────────────────────── */}
       {showAddPatient && (
         <div className="nd-modal-backdrop" onClick={() => setShowAddPatient(false)}>
           <div className="nd-modal" onClick={(e) => e.stopPropagation()}>
@@ -328,22 +268,11 @@ function NurseDashboard({ navigate }) {
                 onKeyDown={(e) => e.key === "Enter" && addPatientToSupervise()}
                 autoFocus
               />
-              {addPatientError && (
-                <div className="nd-modal-error">{addPatientError}</div>
-              )}
+              {addPatientError && <div className="nd-modal-error">{addPatientError}</div>}
             </div>
             <div className="nd-modal-footer">
-              <button
-                className="nd-btn-ghost"
-                onClick={() => { setShowAddPatient(false); setAddPatientError(""); }}
-              >
-                Cancel
-              </button>
-              <button
-                className="nd-btn-primary"
-                onClick={addPatientToSupervise}
-                disabled={addPatientLoading}
-              >
+              <button className="nd-btn-ghost" onClick={() => { setShowAddPatient(false); setAddPatientError(""); }}>Cancel</button>
+              <button className="nd-btn-primary" onClick={addPatientToSupervise} disabled={addPatientLoading}>
                 {addPatientLoading ? "Adding…" : "Add Patient"}
               </button>
             </div>
@@ -351,7 +280,6 @@ function NurseDashboard({ navigate }) {
         </div>
       )}
 
-      {/* ── Sidebar ──────────────────────────────────────────────────────── */}
       <aside className={`nd-sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="nd-sidebar-logo">
           <div className="nd-logo-icon"><PulseIcon /></div>
@@ -374,9 +302,7 @@ function NurseDashboard({ navigate }) {
                 </span>
               )}
               {item.id === "tasks" && tasks.filter((t) => !t.done).length > 0 && (
-                <span className="nd-nav-badge nd-nav-badge--warn">
-                  {tasks.filter((t) => !t.done).length}
-                </span>
+                <span className="nd-nav-badge nd-nav-badge--warn">{tasks.filter((t) => !t.done).length}</span>
               )}
               {active === item.id && <span className="nd-nav-pip" />}
             </button>
@@ -396,13 +322,11 @@ function NurseDashboard({ navigate }) {
             </div>
           </div>
           <button className="nd-logout-btn" onClick={logout}>
-            <LogoutIcon />
-            <span>Sign out</span>
+            <LogoutIcon /><span>Sign out</span>
           </button>
         </div>
       </aside>
 
-      {/* ── Main ─────────────────────────────────────────────────────────── */}
       <main className="nd-main">
         <header className="nd-topbar">
           <button className="nd-hamburger" onClick={() => setSidebar((s) => !s)}>
@@ -415,27 +339,23 @@ function NurseDashboard({ navigate }) {
           <div className="nd-topbar-right">
             {criticalCount > 0 && (
               <div className="nd-critical-banner">
-                <span className="nd-critical-dot" />
-                {criticalCount} critical
+                <span className="nd-critical-dot" />{criticalCount} critical
               </div>
             )}
             {navigate && (
-              <button className="nd-btn-ghost nd-back-btn" onClick={() => navigate("home")}>
-                ← Back
-              </button>
+              <button className="nd-btn-ghost nd-back-btn" onClick={() => navigate("home")}>← Back</button>
             )}
           </div>
         </header>
 
         <div className="nd-content">
 
-          {/* ══ OVERVIEW ══════════════════════════════════════════════════════ */}
           {active === "home" && (
             <div className="nd-section fade-in">
               <div className="nd-welcome-banner">
                 <div>
                   <p className="nd-welcome-greeting">Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"},</p>
-                  <h2 className="nd-welcome-name">{nurseData?.firstName || "Nurse"}</h2>
+                  <h2 className="nd-welcome-name">{nurseData?.firstName || "Nurse"} {nurseData?.lastName || ""}</h2>
                 </div>
                 <div className="nd-welcome-chips">
                   <span className="nd-role-chip">NURSE</span>
@@ -445,10 +365,10 @@ function NurseDashboard({ navigate }) {
 
               <div className="nd-stats-grid">
                 {[
-                  { label: "My Patients",   value: patients.length,                                         sub: "Under your care",        variant: "default" },
-                  { label: "Critical",       value: patients.filter((p) => p.condition === "Critical").length, sub: "Require attention",      variant: "critical" },
-                  { label: "Active Alerts",  value: visAlerts.length,                                        sub: "Unresolved",             variant: visAlerts.length > 0 ? "warn" : "default" },
-                  { label: "Tasks Pending",  value: tasks.filter((t) => !t.done).length,                   sub: `${doneTasks} completed`,  variant: "default" },
+                  { label: "My Patients",   value: patients.length, sub: "Under your care", variant: "default" },
+                  { label: "Critical",       value: patients.filter((p) => p.condition === "Critical").length, sub: "Require attention", variant: "critical" },
+                  { label: "Active Alerts",  value: visAlerts.length, sub: "Unresolved", variant: visAlerts.length > 0 ? "warn" : "default" },
+                  { label: "Tasks Pending",  value: tasks.filter((t) => !t.done).length, sub: `${doneTasks} completed`, variant: "default" },
                 ].map((s, i) => (
                   <div key={i} className={`nd-stat-card nd-stat-card--${s.variant}`}>
                     <div className="nd-stat-value">{s.value}</div>
@@ -462,28 +382,31 @@ function NurseDashboard({ navigate }) {
                 <>
                   <SectionHeading>Critical Patients</SectionHeading>
                   <div className="nd-critical-list">
-                    {patients.filter((p) => p.condition === "Critical").map((p) => (
-                      <div key={p.id} className="nd-critical-card">
-                        <div className="nd-critical-left">
-                          <div className="nd-avatar nd-avatar--critical">{initials(p.name)}</div>
-                          <div>
-                            <div className="nd-patient-name">{p.name}</div>
-                            <div className="nd-patient-sub">{p.room} · Age {p.age}</div>
+                    {patients.filter((p) => p.condition === "Critical").map((p) => {
+                      const v = liveVitals[p.id];
+                      return (
+                        <div key={p.id} className="nd-critical-card">
+                          <div className="nd-critical-left">
+                            <div className="nd-avatar nd-avatar--critical">{initials(`${p.firstName} ${p.lastName}`)}</div>
+                            <div>
+                              <div className="nd-patient-name">{p.firstName} {p.lastName}</div>
+                              <div className="nd-patient-sub">{p.room} · Age {p.age}</div>
+                            </div>
                           </div>
+                          {v && (
+                            <div className="nd-critical-vitals">
+                              {[["HR", v.heartRate, "bpm"], ["BP", v.bloodPressure, ""], ["SpO₂", v.spo2, "%"]].map(([l, val, u]) => (
+                                <div key={l} className="nd-crit-vital">
+                                  <div className="nd-crit-vital-label">{l}</div>
+                                  <div className="nd-crit-vital-val">{val}<span className="nd-crit-vital-unit">{u}</span></div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <Badge label={p.condition} variant="critical" />
                         </div>
-                        {p.vitals && (
-                          <div className="nd-critical-vitals">
-                            {[["HR", p.vitals.hr, "bpm"], ["BP", p.vitals.bp, ""], ["SpO₂", p.vitals.spo2, "%"]].map(([l, v, u]) => (
-                              <div key={l} className="nd-crit-vital">
-                                <div className="nd-crit-vital-label">{l}</div>
-                                <div className="nd-crit-vital-val">{v}<span className="nd-crit-vital-unit">{u}</span></div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        <Badge label={p.condition} variant="critical" />
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </>
               )}
@@ -529,7 +452,6 @@ function NurseDashboard({ navigate }) {
             </div>
           )}
 
-          {/* ══ PATIENTS ══════════════════════════════════════════════════════ */}
           {active === "patients" && (
             <div className="nd-section fade-in">
               {selPatient ? (
@@ -537,23 +459,24 @@ function NurseDashboard({ navigate }) {
                   <button className="nd-back-link" onClick={() => setSelPat(null)}>← All patients</button>
                   <div className="nd-patient-detail">
                     <div className="nd-patient-detail-header">
-                      <div className={`nd-avatar nd-avatar--accent nd-avatar--lg`}>{initials(selPatient.name)}</div>
+                      <div className={`nd-avatar nd-avatar--accent nd-avatar--lg`}>{initials(`${selPatient.firstName} ${selPatient.lastName}`)}</div>
                       <div className="nd-patient-detail-info">
-                        <h2>{selPatient.name}</h2>
+                        <h2>{selPatient.firstName} {selPatient.lastName}</h2>
                         <p>{selPatient.room} · Age {selPatient.age}{selPatient.admitted ? ` · Admitted ${selPatient.admitted}` : ""}</p>
                         {selPatient.diagnosis && <p className="nd-patient-diag">{selPatient.diagnosis}</p>}
                       </div>
                       <Badge label={selPatient.condition} variant={condColor(selPatient.condition)} />
                     </div>
-                    {selPatient.vitals && (
+                    {liveVitals[selPatient.id] && (
                       <>
                         <SectionHeading>Current Vitals</SectionHeading>
                         <div className="nd-vitals-row">
                           {[
-                            ["Heart Rate",     selPatient.vitals.hr,   "bpm"],
-                            ["Blood Pressure", selPatient.vitals.bp,   "mmHg"],
-                            ["SpO₂",          selPatient.vitals.spo2, "%"],
-                            ["Temperature",   selPatient.vitals.temp, "°C"],
+                            ["Heart Rate",     liveVitals[selPatient.id].heartRate,   "bpm"],
+                            ["Blood Pressure", liveVitals[selPatient.id].bloodPressure,   "mmHg"],
+                            ["SpO₂",          liveVitals[selPatient.id].spo2, "%"],
+                            ["Temperature",   liveVitals[selPatient.id].bodyTemperature, "°C"],
+                            ["Glucose",       liveVitals[selPatient.id].glucoseLevel, "mg/dL"],
                           ].map(([label, val, unit]) => (
                             <div key={label} className="nd-vital-pill">
                               <div className="nd-vital-pill-label">{label}</div>
@@ -563,11 +486,11 @@ function NurseDashboard({ navigate }) {
                         </div>
                       </>
                     )}
-                    {alerts.filter((a) => (a.patientName || a.patient) === selPatient.name).length > 0 && (
+                    {visAlerts.filter((a) => a.patientName === `${selPatient.firstName} ${selPatient.lastName}`).length > 0 && (
                       <>
                         <SectionHeading>Active Alerts</SectionHeading>
                         <div className="nd-alert-list">
-                          {alerts.filter((a) => (a.patientName || a.patient) === selPatient.name).map((a) => (
+                          {visAlerts.filter((a) => a.patientName === `${selPatient.firstName} ${selPatient.lastName}`).map((a) => (
                             <div key={a.id} className={`nd-alert-card nd-alert-card--${a.type}`}>
                               <div className="nd-alert-left">
                                 <div className={`nd-alert-dot nd-alert-dot--${a.type}`} />
@@ -588,21 +511,15 @@ function NurseDashboard({ navigate }) {
                   <div className="nd-patients-toolbar">
                     <p className="nd-patients-count">{patients.length} patient{patients.length !== 1 ? "s" : ""} under your care</p>
                     <button className="nd-btn-primary nd-btn-add-patient" onClick={() => setShowAddPatient(true)}>
-                      <span className="nd-btn-icon"><PlusIcon /></span>
-                      Add Patient
+                      <span className="nd-btn-icon"><PlusIcon /></span>Add Patient
                     </button>
                   </div>
 
                   {patients.length === 0 ? (
                     <div className="nd-empty-patients">
-                      <EmptyState
-                        icon={<PatientsIcon />}
-                        title="No patients assigned yet"
-                        sub="Use 'Add Patient' to start supervising a patient."
-                      />
+                      <EmptyState icon={<PatientsIcon />} title="No patients assigned yet" sub="Use 'Add Patient' to start supervising a patient." />
                       <button className="nd-btn-primary nd-btn-add-empty" onClick={() => setShowAddPatient(true)}>
-                        <span className="nd-btn-icon"><PlusIcon /></span>
-                        Add Your First Patient
+                        <span className="nd-btn-icon"><PlusIcon /></span>Add Your First Patient
                       </button>
                     </div>
                   ) : (
@@ -610,10 +527,10 @@ function NurseDashboard({ navigate }) {
                       {patients.map((p) => (
                         <div key={p.id} className="nd-patient-card" onClick={() => setSelPat(p)}>
                           <div className="nd-patient-card-top">
-                            <div className={`nd-avatar nd-avatar--${condColor(p.condition)}`}>{initials(p.name)}</div>
+                            <div className={`nd-avatar nd-avatar--${condColor(p.condition)}`}>{initials(`${p.firstName} ${p.lastName}`)}</div>
                             <Badge label={p.condition} variant={condColor(p.condition)} />
                           </div>
-                          <div className="nd-patient-card-name">{p.name}</div>
+                          <div className="nd-patient-card-name">{p.firstName} {p.lastName}</div>
                           <div className="nd-patient-card-sub">{p.room} · Age {p.age}</div>
                           {p.diagnosis && <div className="nd-patient-card-diag">{p.diagnosis}</div>}
                         </div>
@@ -625,7 +542,6 @@ function NurseDashboard({ navigate }) {
             </div>
           )}
 
-          {/* ══ VITALS ════════════════════════════════════════════════════════ */}
           {active === "vitals" && (
             <div className="nd-section fade-in">
               {patients.length === 0 ? (
@@ -638,25 +554,26 @@ function NurseDashboard({ navigate }) {
                         <th>Patient</th><th>Room</th>
                         <th>HR (bpm)</th><th>BP (mmHg)</th>
                         <th>SpO₂ (%)</th><th>Temp (°C)</th>
-                        <th>Status</th>
+                        <th>Glucose</th><th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {patients.map((p) => {
-                        const v = p.vitals;
+                        const v = liveVitals[p.id];
                         return (
                           <tr key={p.id} className={p.condition === "Critical" ? "nd-tr--critical" : ""}>
                             <td>
                               <div className="nd-table-patient">
-                                <div className={`nd-avatar nd-avatar--sm nd-avatar--${condColor(p.condition)}`}>{initials(p.name)}</div>
-                                {p.name}
+                                <div className={`nd-avatar nd-avatar--sm nd-avatar--${condColor(p.condition)}`}>{initials(`${p.firstName} ${p.lastName}`)}</div>
+                                {p.firstName} {p.lastName}
                               </div>
                             </td>
                             <td className="nd-mono">{p.room}</td>
-                            <td className={`nd-mono ${v?.hr > 100 ? "nd-val--warn" : ""}`}>{v?.hr ?? "—"}</td>
-                            <td className="nd-mono">{v?.bp ?? "—"}</td>
+                            <td className={`nd-mono ${v?.heartRate > 100 ? "nd-val--warn" : ""}`}>{v?.heartRate ?? "—"}</td>
+                            <td className="nd-mono">{v?.bloodPressure ?? "—"}</td>
                             <td className={`nd-mono ${v?.spo2 < 95 ? "nd-val--critical" : ""}`}>{v?.spo2 ?? "—"}</td>
-                            <td className={`nd-mono ${v?.temp > 38 ? "nd-val--warn" : ""}`}>{v?.temp ?? "—"}</td>
+                            <td className={`nd-mono ${v?.bodyTemperature > 38 ? "nd-val--warn" : ""}`}>{v?.bodyTemperature ?? "—"}</td>
+                            <td className="nd-mono">{v?.glucoseLevel ?? "—"}</td>
                             <td><Badge label={p.condition} variant={condColor(p.condition)} /></td>
                           </tr>
                         );
@@ -669,7 +586,6 @@ function NurseDashboard({ navigate }) {
             </div>
           )}
 
-          {/* ══ ALERTS ════════════════════════════════════════════════════════ */}
           {active === "alerts" && (
             <div className="nd-section fade-in">
               {visAlerts.length === 0 ? (
@@ -681,9 +597,7 @@ function NurseDashboard({ navigate }) {
                       <div className="nd-alert-left">
                         <div className={`nd-alert-dot nd-alert-dot--${a.type}`} />
                         <div>
-                          <div className="nd-alert-patient">
-                            {a.patientName || a.patient} <span className="nd-alert-room">· {a.room}</span>
-                          </div>
+                          <div className="nd-alert-patient">{a.patientName} <span className="nd-alert-room">· {a.room}</span></div>
                           <div className="nd-alert-msg">{a.message}</div>
                           <div className="nd-alert-time">{a.time}</div>
                         </div>
@@ -699,7 +613,6 @@ function NurseDashboard({ navigate }) {
             </div>
           )}
 
-          {/* ══ APPOINTMENTS ══════════════════════════════════════════════════ */}
           {active === "appointments" && (
             <div className="nd-section fade-in">
               {appointments.length === 0 ? (
@@ -737,7 +650,6 @@ function NurseDashboard({ navigate }) {
             </div>
           )}
 
-          {/* ══ MEDICATIONS ═══════════════════════════════════════════════════ */}
           {active === "medications" && (
             <div className="nd-section fade-in">
               {meds.length > 0 && (
@@ -775,7 +687,6 @@ function NurseDashboard({ navigate }) {
             </div>
           )}
 
-          {/* ══ TASKS ═════════════════════════════════════════════════════════ */}
           {active === "tasks" && (
             <div className="nd-section fade-in">
               <div className="nd-form-card">
@@ -798,10 +709,7 @@ function NurseDashboard({ navigate }) {
                   <div key={t.id} className="nd-task-card" onClick={() => toggleTask(t.id)}>
                     <div className={`nd-task-circle nd-task-circle--${t.priority}`} />
                     <div className="nd-task-text">{t.text}</div>
-                    <Badge
-                      label={t.priority}
-                      variant={t.priority === "high" ? "critical" : t.priority === "medium" ? "caution" : "default"}
-                    />
+                    <Badge label={t.priority} variant={t.priority === "high" ? "critical" : t.priority === "medium" ? "caution" : "default"} />
                   </div>
                 ))}
                 {tasks.filter((t) => !t.done).length === 0 && (
@@ -825,7 +733,6 @@ function NurseDashboard({ navigate }) {
             </div>
           )}
 
-          {/* ══ REPORTS ═══════════════════════════════════════════════════════ */}
           {active === "reports" && (
             <div className="nd-section fade-in">
               {reports.length === 0 ? (

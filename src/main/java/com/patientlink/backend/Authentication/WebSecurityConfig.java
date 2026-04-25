@@ -56,17 +56,23 @@ public class WebSecurityConfig {
 
                         .requestMatchers("/api/v1/auth/me").authenticated()
 
+
+                        .requestMatchers("/api/v1/patients/supervise").hasAnyAuthority("DOCTOR", "ROLE_DOCTOR", "NURSE", "ROLE_NURSE")
                         .requestMatchers("/api/v1/medication/prescribe").hasAnyAuthority("DOCTOR", "ROLE_DOCTOR")
 
                         .requestMatchers("/api/v1/medication/**").authenticated()
 
-                        .requestMatchers("/api/v1/procedure/assign").hasAllAuthorities("DOCTOR","ROLE_DOCTOR", "NURSE", "ROLE_NURSE ")
+                        .requestMatchers("/api/v1/procedure/assign").hasAnyAuthority("DOCTOR","ROLE_DOCTOR", "NURSE", "ROLE_NURSE ")
                         
                         .requestMatchers("/api/v1/procedure/**").authenticated()
 
                         .requestMatchers("/api/v1/appointments/**").authenticated()
 
                         .requestMatchers("/api/v1/appointments/schedule").authenticated()
+
+                        .requestMatchers("/api/v1/alerts/**").authenticated()
+                        
+                        .requestMatchers("/api/v1/patient-record/**").authenticated()
                         
                         .anyRequest().authenticated());
 

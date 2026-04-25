@@ -25,7 +25,7 @@ public class PulseScheduler {
         for (User user : patients) {
             PulseData pulseData = new PulseData();
             pulseData.setPatientId(user.getId());
-            pulseData.setHeartRate(random.nextInt(40) + 60); 
+            pulseData.setHeartRate(random.nextInt(40) + 100); 
             pulseData.setSpo2(random.nextInt(5) + 95); 
             pulseData.setRespiratoryRate(random.nextInt(10) + 12); 
             pulseData.setBloodPressure(random.nextInt(40) + 80); 

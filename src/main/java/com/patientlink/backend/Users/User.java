@@ -1,6 +1,9 @@
 package com.patientlink.backend.Users;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,10 +21,12 @@ public class User {
     private String contactNumber;
     private String address;
     private String role;
+    private List<String> supervisedPatientIds = new ArrayList<>();
+
 
     public User() {}
     
-    public User(String id, String firstName, String lastName, String email, String password, String dob, String gender, String contactNumber, String address, String role) {
+    public User(String id, String firstName, String lastName, String email, String password, String dob, String gender, String contactNumber, String address, String role, List<String> supervisedPatientIds) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -32,6 +37,7 @@ public class User {
         this.contactNumber = contactNumber;
         this.address = address;
         this.role = role;
+        this.supervisedPatientIds = supervisedPatientIds;
     }
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -53,6 +59,12 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public String getRole() { return this.role; }
     public void setRole(String role) { this.role = role; }
+    public List<String> getSupervisedPatients() {
+        return supervisedPatientIds;
+    }
+    public void setSupervisedPatients(List<String> supervisedPatientIds) {
+        this.supervisedPatientIds = supervisedPatientIds;
+    }
 
 
 

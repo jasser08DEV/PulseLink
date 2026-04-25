@@ -16,7 +16,7 @@ public class UserRepositoryTest {
     @Test
     public void testFindByEmail() {
         
-        User user = new User("1", "Mo", "Abdou", "mo@example.com", "pass123", "01/01/2000", "Male", "1234567890", "Jacksonville", "PATIENT");
+        User user = new User("1", "Mo", "Abdou", "mo@example.com", "pass123", "01/01/2000", "Male", "1234567890", "Jacksonville", "PATIENT", null);
         userRepository.save(user);
         User foundUser = userRepository.findByEmail("mo@example.com");
         assertThat(foundUser.getFirstName()).isEqualTo("Mo");

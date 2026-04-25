@@ -1,11 +1,12 @@
 package com.patientlink.backend.Users;
 
+import java.util.List;
 
 public class Nurse extends User {
     private String licenseType;
 
-    public Nurse (String id, String firstName, String lastName, String email, String password, String dob, String gender, String contactNumber, String address, String licenseType) {
-        super(id, firstName, lastName, email, password, dob, gender, contactNumber, address, "NURSE");
+    public Nurse (String id, String firstName, String lastName, String email, String password, String dob, String gender, String contactNumber, String address, String licenseType, List<String> supervisedPatientIds) {
+        super(id, firstName, lastName, email, password, dob, gender, contactNumber, address, "NURSE", supervisedPatientIds);
         this.licenseType = licenseType;
     }
 
