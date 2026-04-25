@@ -64,6 +64,10 @@ public class WebSecurityConfig {
                         
                         .requestMatchers("/api/v1/procedure/**").authenticated()
 
+                        .requestMatchers("/api/v1/appointments/**").authenticated()
+
+                        .requestMatchers("/api/v1/appointments/schedule").authenticated()
+                        
                         .anyRequest().authenticated());
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
