@@ -15,18 +15,20 @@ public class AppointmentData {
     private String patientId;
     private String doctorName;
     private String doctorId;
+    private String title;
     private String appointmentTime;
     private String appointmentDate;
 
     public AppointmentData() {
     }
     
-    public AppointmentData(String id, String patientId, String doctorName, String doctorId, String appointmentTime,
+    public AppointmentData(String id, String patientId, String doctorName, String doctorId, String title, String appointmentTime,
             String appointmentDate) {
         this.id = id;
         this.patientId = patientId;
         this.doctorName = doctorName;
         this.doctorId = doctorId;
+        this.title = title;
         this.appointmentTime = appointmentTime;
         this.appointmentDate = appointmentDate;
     }
@@ -53,6 +55,14 @@ public class AppointmentData {
 
     public void setDoctorName(String doctorName) {
         this.doctorName = doctorName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDoctorId() {
