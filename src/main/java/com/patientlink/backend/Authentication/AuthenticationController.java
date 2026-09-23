@@ -65,6 +65,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
+        System.out.println("LOGIN ENDPOINT HIT - email: " + user.getEmail());
         String loginIdentifier = (user.getEmail() != null && !user.getEmail().isEmpty())
                 ? user.getEmail()
                 : user.getId();

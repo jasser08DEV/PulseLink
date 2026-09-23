@@ -51,29 +51,25 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Public Endpoints
+
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Public auth endpoints
                         .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login", "/api/v1/welcome").permitAll()
 
+                        // Authenticated endpoints
                         .requestMatchers("/api/v1/auth/me").authenticated()
-
-
-                        .requestMatchers("/api/v1/patients/supervise").hasAnyAuthority("DOCTOR", "ROLE_DOCTOR", "NURSE", "ROLE_NURSE")
-                        .requestMatchers("/api/v1/medication/prescribe").hasAnyAuthority("DOCTOR", "ROLE_DOCTOR")
-
                         .requestMatchers("/api/v1/medication/**").authenticated()
-
-                        .requestMatchers("/api/v1/procedure/assign").hasAnyAuthority("DOCTOR","ROLE_DOCTOR", "NURSE", "ROLE_NURSE ")
-                        
                         .requestMatchers("/api/v1/procedure/**").authenticated()
-
                         .requestMatchers("/api/v1/appointments/**").authenticated()
-
-                        .requestMatchers("/api/v1/appointments/schedule").authenticated()
-
                         .requestMatchers("/api/v1/alerts/**").authenticated()
-                        
                         .requestMatchers("/api/v1/patient-record/**").authenticated()
-                        
+
+                        // Role restricted
+                        .requestMatchers("/api/v1/patients/supervise").hasAnyAuthority("DOCTOR", "NURSE")
+                        .requestMatchers("/api/v1/medication/prescribe").hasAnyAuthority("DOCTOR", "NURSE")
+                        .requestMatchers("/api/v1/procedure/assign").hasAnyAuthority("DOCTOR", "NURSE")
+
                         .anyRequest().authenticated());
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

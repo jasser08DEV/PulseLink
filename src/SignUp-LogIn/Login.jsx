@@ -28,7 +28,7 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch("http://10.0.0.116:8080/api/v1/auth/login", {
+      const response = await fetch("http://10.0.0.149:8080/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -38,30 +38,26 @@ const Login = () => {
       });
 
       const data = await response.json();
-      console.log("Role raw value:", JSON.stringify(data.role));
-      
+      console.log("Login response:", data);
 
-      const userRole = (data.role || "").toUpperCase().trim(); //
+      const userRole = (data.role || "").toUpperCase().trim();
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", userRole);
         localStorage.setItem("identifier", data.identifier);
 
-        // Log exactly what we are checking against
-        console.log("Checking Role:", userRole);
-
         if (userRole === "PATIENT") {
           window.location.href = "/dashboard";
         } else if (userRole === "DOCTOR") {
           window.location.href = "/doctor-dashboard";
         } else if (userRole === "NURSE") {
-          window.location.href = "/nurse-dashboard"; //
+          window.location.href = "/nurse-dashboard";
         } else {
-          setError(
-            `Access Denied: Role "${userRole}" is not authorized for a portal.`,
-          );
+          setError(`Access Denied: Role "${userRole}" is not authorized.`);
         }
+      } else {
+        setError(data.message || "Invalid credentials. Please try again.");
       }
     } catch (err) {
       setError("Could not connect to the server. Is your backend running?");
