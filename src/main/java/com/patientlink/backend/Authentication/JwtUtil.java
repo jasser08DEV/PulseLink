@@ -1,25 +1,31 @@
 package com.patientlink.backend.Authentication;
 
+
 import java.nio.charset.StandardCharsets;
+
 import java.util.Date;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component; 
+import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
-public class JwtUtil {
+@Slf4j
+public class JwtUtil  {
     @Value("${jwt.secret}")
     private String jwtSecret;
     @Value("${jwt.expiration}")
     private long jwtExpiration;
-    
+
     private SecretKey key;
 
     @PostConstruct
@@ -27,29 +33,38 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String identifier){
+    public String generateToken(String identifier) {
         return Jwts.builder()
-            .subject(identifier)
-            .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
-            .signWith(key)
-            .compact();
-    } 
+                .subject(identifier)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .signWith(key)
+                .compact();
+    }
 
     public String getUserFromToken(String token) {
         return Jwts.parser().verifyWith(key).build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .getSubject();
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
+            Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token);
 
+            return true;
+        } catch (ExpiredJwtException e) {
+            
+        } catch (SignatureException e) {
+            
+        } catch (JwtException | IllegalArgumentException e) {
+            
+        }
+
+        return false;
+    }
 }

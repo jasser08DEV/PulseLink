@@ -65,7 +65,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
-        System.out.println("LOGIN ENDPOINT HIT - email: " + user.getEmail());
+
         String loginIdentifier = (user.getEmail() != null && !user.getEmail().isEmpty())
                 ? user.getEmail()
                 : user.getId();
@@ -80,9 +80,6 @@ public class AuthenticationController {
         if (authenticatedUser == null) {
             authenticatedUser = userRepository.findById(userDetails.getUsername()).orElse(null);
         }
-
-        System.out.println("DEBUG - Role found for " + userDetails.getUsername() + " is: " +
-                (authenticatedUser != null ? authenticatedUser.getRole() : "NULL"));
 
         return ResponseEntity.ok(Map.of(
                 "token", jwt,

@@ -67,7 +67,7 @@ public class DataSeeder implements CommandLineRunner {
             user.setPassword(passwordEncoder.encode(rawPassword));
 
             userRepository.save(user); // Saves to your MongoDB
-            writer.printf("[%s] %s | %s%n", role, email, rawPassword);
+            writer.printf("[%s] %s | %s %s%n", role, email, rawPassword, id);
         }
     }
 }
